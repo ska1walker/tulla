@@ -2,29 +2,32 @@
 
 import { useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { role, ready } = useAuth();
+  const { userProfile, currentProject, ready } = useAuth();
 
   useEffect(() => {
-    if (ready && !role) {
-      router.push('/login');
+    if (ready) {
+      if (!userProfile) {
+        // Not logged in - redirect to login
+        router.push('/login');
+      } else if (currentProject) {
+        // Has current project - redirect to project dashboard
+        router.push(`/projects/${currentProject.id}`);
+      } else {
+        // No current project - redirect to project list
+        router.push('/projects');
+      }
     }
-  }, [role, ready, router]);
+  }, [ready, userProfile, currentProject, router]);
 
-  if (!ready) {
-    return (
-      <div className="h-screen flex items-center justify-center text-stone-300 font-bold uppercase tracking-widest text-[10px]">
-        Lade TULLA Architektur...
-      </div>
-    );
-  }
-
-  if (!role) {
-    return null;
-  }
-
-  return <>{children}</>;
+  // Show loading while redirecting
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-stone-50">
+      <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
+    </div>
+  );
 }

@@ -1,0 +1,136 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isNotBanned() {
+      return isSignedIn() &&
+        (!exists(/databases/$(database)/documents/users/$(request.auth.uid)) ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBanned != true);
+    }
+
+    function isProjectOwner(projectId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/projects/$(projectId)) &&
+        get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId == request.auth.uid;
+    }
+
+    function isProjectMember(projectId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/projects/$(projectId)/members/$(request.auth.uid));
+    }
+
+    function getProjectRole(projectId) {
+      return get(/databases/$(database)/documents/projects/$(projectId)/members/$(request.auth.uid)).data.role;
+    }
+
+    function canEditProject(projectId) {
+      return isAdmin() ||
+        (isProjectMember(projectId) && getProjectRole(projectId) in ['owner', 'editor']);
+    }
+
+    function canViewProject(projectId) {
+      return isAdmin() || isProjectMember(projectId);
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+
+      // Users can create their own profile
+      allow create: if isSignedIn() && request.auth.uid == userId;
+
+      // Users can update their own non-admin fields
+      // Admins can update any user
+      allow update: if isSignedIn() && (
+        (request.auth.uid == userId &&
+         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'isBanned'])) ||
+        isAdmin()
+      );
+
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+
+    // Projects collection
+    match /projects/{projectId} {
+      // Anyone signed in can create a project
+      allow create: if isSignedIn() && isNotBanned() &&
+        request.resource.data.ownerId == request.auth.uid;
+
+      // Project members can read
+      allow read: if canViewProject(projectId);
+
+      // Owner and editors can update
+      allow update: if canEditProject(projectId);
+
+      // Only owner or admin can delete
+      allow delete: if isAdmin() || isProjectOwner(projectId);
+
+      // Project members subcollection
+      match /members/{memberId} {
+        allow read: if canViewProject(projectId);
+        allow create, update, delete: if isAdmin() || isProjectOwner(projectId);
+      }
+
+      // Campaigns subcollection
+      match /campaigns/{campaignId} {
+        allow read: if canViewProject(projectId);
+        allow create, update, delete: if canEditProject(projectId);
+      }
+
+      // Channels subcollection
+      match /channels/{channelId} {
+        allow read: if canViewProject(projectId);
+        allow create, update, delete: if canEditProject(projectId);
+      }
+
+      // Settings subcollection
+      match /settings/{settingId} {
+        allow read: if canViewProject(projectId);
+        allow create, update, delete: if canEditProject(projectId);
+      }
+    }
+
+    // Invitations collection
+    match /invitations/{invitationId} {
+      // Admins and project owners can read invitations
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.invitedBy == request.auth.uid ||
+        isProjectOwner(resource.data.projectId)
+      );
+
+      // Project owners can create invitations
+      allow create: if isSignedIn() && isNotBanned() && (
+        isAdmin() ||
+        isProjectOwner(request.resource.data.projectId)
+      );
+
+      // Invitation can be updated (accepted, cancelled) by recipient or creator
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.invitedBy == request.auth.uid ||
+        resource.data.email == request.auth.token.email
+      );
+
+      // Only admins or creators can delete
+      allow delete: if isAdmin() || resource.data.invitedBy == request.auth.uid;
+    }
+
+    // Legacy artifacts collection (for backwards compatibility)
+    match /artifacts/{document=**} {
+      allow read, write: if isSignedIn() && isNotBanned();
+    }
+  }
+}

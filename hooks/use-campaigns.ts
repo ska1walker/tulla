@@ -11,13 +11,15 @@ import {
 } from 'firebase/firestore';
 import { Campaign, CampaignFormData } from '@/types';
 import { useAuth } from '@/contexts/auth-context';
-import { PROJECT_ID } from '@/lib/firebase/config';
 import { STORAGE_KEYS } from '@/lib/constants';
 
-export function useCampaigns() {
-  const { db, isOffline, ready, role } = useAuth();
+export function useCampaigns(projectId?: string) {
+  const { db, isOffline, ready, role, currentProject } = useAuth();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Use provided projectId or fall back to current project
+  const activeProjectId = projectId || currentProject?.id;
 
   // Load campaigns
   useEffect(() => {
@@ -30,9 +32,13 @@ export function useCampaigns() {
       return;
     }
 
-    if (!db) return;
+    if (!db || !activeProjectId) {
+      setCampaigns([]);
+      setLoading(false);
+      return;
+    }
 
-    const ref = collection(db, 'artifacts', PROJECT_ID, 'public', 'data', 'campaigns');
+    const ref = collection(db, 'projects', activeProjectId, 'campaigns');
     const unsubscribe = onSnapshot(ref, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -43,7 +49,7 @@ export function useCampaigns() {
     });
 
     return () => unsubscribe();
-  }, [db, isOffline, ready, role]);
+  }, [db, isOffline, ready, role, activeProjectId]);
 
   // Save campaign
   const saveCampaign = useCallback(
@@ -78,9 +84,9 @@ export function useCampaigns() {
         return;
       }
 
-      if (!db) return;
+      if (!db || !activeProjectId) return;
 
-      const ref = collection(db, 'artifacts', PROJECT_ID, 'public', 'data', 'campaigns');
+      const ref = collection(db, 'projects', activeProjectId, 'campaigns');
 
       if (data.id) {
         await updateDoc(doc(ref, data.id), processedData);
@@ -88,7 +94,7 @@ export function useCampaigns() {
         await addDoc(ref, processedData);
       }
     },
-    [db, isOffline]
+    [db, isOffline, activeProjectId]
   );
 
   // Delete campaign
@@ -102,12 +108,12 @@ export function useCampaigns() {
         return;
       }
 
-      if (!db) return;
+      if (!db || !activeProjectId) return;
 
-      const ref = doc(db, 'artifacts', PROJECT_ID, 'public', 'data', 'campaigns', id);
+      const ref = doc(db, 'projects', activeProjectId, 'campaigns', id);
       await deleteDoc(ref);
     },
-    [db, isOffline]
+    [db, isOffline, activeProjectId]
   );
 
   return { campaigns, loading, saveCampaign, deleteCampaign };

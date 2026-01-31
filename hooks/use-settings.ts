@@ -4,14 +4,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { Phases, Branding } from '@/types';
 import { useAuth } from '@/contexts/auth-context';
-import { PROJECT_ID } from '@/lib/firebase/config';
 import { DEFAULT_PHASES, DEFAULT_BRANDING, STORAGE_KEYS } from '@/lib/constants';
 
-export function useSettings() {
-  const { db, isOffline, ready, role } = useAuth();
+export function useSettings(projectId?: string) {
+  const { db, isOffline, ready, role, currentProject } = useAuth();
   const [phases, setPhases] = useState<Phases>(DEFAULT_PHASES);
   const [branding, setBranding] = useState<Branding>(DEFAULT_BRANDING);
   const [loading, setLoading] = useState(true);
+
+  // Use provided projectId or fall back to current project
+  const activeProjectId = projectId || currentProject?.id;
 
   // Load settings
   useEffect(() => {
@@ -28,10 +30,15 @@ export function useSettings() {
       return;
     }
 
-    if (!db) return;
+    if (!db || !activeProjectId) {
+      setPhases(DEFAULT_PHASES);
+      setBranding(DEFAULT_BRANDING);
+      setLoading(false);
+      return;
+    }
 
     // Subscribe to phases
-    const phasesRef = doc(db, 'artifacts', PROJECT_ID, 'public', 'data', 'settings', 'phases');
+    const phasesRef = doc(db, 'projects', activeProjectId, 'settings', 'phases');
     const unsubPhases = onSnapshot(phasesRef, (snapshot) => {
       if (snapshot.exists()) {
         setPhases((prev) => ({ ...prev, ...snapshot.data() }));
@@ -39,7 +46,7 @@ export function useSettings() {
     });
 
     // Subscribe to branding
-    const brandingRef = doc(db, 'artifacts', PROJECT_ID, 'public', 'data', 'settings', 'branding');
+    const brandingRef = doc(db, 'projects', activeProjectId, 'settings', 'branding');
     const unsubBranding = onSnapshot(brandingRef, (snapshot) => {
       if (snapshot.exists()) {
         setBranding(snapshot.data() as Branding);
@@ -51,7 +58,7 @@ export function useSettings() {
       unsubPhases();
       unsubBranding();
     };
-  }, [db, isOffline, ready, role]);
+  }, [db, isOffline, ready, role, activeProjectId]);
 
   // Save phases
   const savePhases = useCallback(
@@ -62,12 +69,12 @@ export function useSettings() {
         return;
       }
 
-      if (!db) return;
+      if (!db || !activeProjectId) return;
 
-      const ref = doc(db, 'artifacts', PROJECT_ID, 'public', 'data', 'settings', 'phases');
+      const ref = doc(db, 'projects', activeProjectId, 'settings', 'phases');
       await setDoc(ref, newPhases, { merge: true });
     },
-    [db, isOffline]
+    [db, isOffline, activeProjectId]
   );
 
   // Save branding
@@ -79,12 +86,12 @@ export function useSettings() {
         return;
       }
 
-      if (!db) return;
+      if (!db || !activeProjectId) return;
 
-      const ref = doc(db, 'artifacts', PROJECT_ID, 'public', 'data', 'settings', 'branding');
+      const ref = doc(db, 'projects', activeProjectId, 'settings', 'branding');
       await setDoc(ref, newBranding, { merge: true });
     },
-    [db, isOffline]
+    [db, isOffline, activeProjectId]
   );
 
   return { phases, branding, loading, savePhases, saveBranding };

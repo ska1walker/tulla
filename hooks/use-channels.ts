@@ -11,13 +11,15 @@ import {
 } from 'firebase/firestore';
 import { Channel } from '@/types';
 import { useAuth } from '@/contexts/auth-context';
-import { PROJECT_ID } from '@/lib/firebase/config';
 import { STORAGE_KEYS } from '@/lib/constants';
 
-export function useChannels() {
-  const { db, isOffline, ready, role } = useAuth();
+export function useChannels(projectId?: string) {
+  const { db, isOffline, ready, role, currentProject } = useAuth();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Use provided projectId or fall back to current project
+  const activeProjectId = projectId || currentProject?.id;
 
   // Load channels
   useEffect(() => {
@@ -31,9 +33,13 @@ export function useChannels() {
       return;
     }
 
-    if (!db) return;
+    if (!db || !activeProjectId) {
+      setChannels([]);
+      setLoading(false);
+      return;
+    }
 
-    const ref = collection(db, 'artifacts', PROJECT_ID, 'public', 'data', 'channels');
+    const ref = collection(db, 'projects', activeProjectId, 'channels');
     const unsubscribe = onSnapshot(ref, (snapshot) => {
       const data = snapshot.docs
         .map((doc) => ({
@@ -46,7 +52,7 @@ export function useChannels() {
     });
 
     return () => unsubscribe();
-  }, [db, isOffline, ready, role]);
+  }, [db, isOffline, ready, role, activeProjectId]);
 
   // Save channel
   const saveChannel = useCallback(
@@ -75,9 +81,9 @@ export function useChannels() {
         return;
       }
 
-      if (!db) return;
+      if (!db || !activeProjectId) return;
 
-      const ref = collection(db, 'artifacts', PROJECT_ID, 'public', 'data', 'channels');
+      const ref = collection(db, 'projects', activeProjectId, 'channels');
 
       if (id) {
         await updateDoc(doc(ref, id), data);
@@ -85,7 +91,7 @@ export function useChannels() {
         await addDoc(ref, { ...data, order: channels.length });
       }
     },
-    [db, isOffline, channels.length]
+    [db, isOffline, channels.length, activeProjectId]
   );
 
   // Delete channel
@@ -99,12 +105,12 @@ export function useChannels() {
         return;
       }
 
-      if (!db) return;
+      if (!db || !activeProjectId) return;
 
-      const ref = doc(db, 'artifacts', PROJECT_ID, 'public', 'data', 'channels', id);
+      const ref = doc(db, 'projects', activeProjectId, 'channels', id);
       await deleteDoc(ref);
     },
-    [db, isOffline]
+    [db, isOffline, activeProjectId]
   );
 
   return { channels, loading, saveChannel, deleteChannel };

@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Settings, Clock, Palette, LogOut, LayoutDashboard } from 'lucide-react';
+import { Plus, Settings, Clock, Palette, LayoutDashboard } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
+import { ProjectSwitcher } from '@/components/ui/project-switcher';
+import { UserMenu } from '@/components/ui/user-menu';
 import { useAuth } from '@/contexts/auth-context';
-import { Phases, PhaseKey } from '@/types';
+import { Phases } from '@/types';
 import { ZOOM_LEVELS, ViewMode, ZoomLevel } from '@/lib/constants';
 
 interface HeaderProps {
@@ -30,7 +32,7 @@ export function Header({
   onOpenChannels,
   onNewCampaign,
 }: HeaderProps) {
-  const { role, logout } = useAuth();
+  const { role } = useAuth();
 
   const viewModes: { key: ViewMode; label: string }[] = [
     { key: 'year', label: 'Gesamt' },
@@ -42,12 +44,15 @@ export function Header({
   return (
     <header className="h-20 bg-white/90 backdrop-blur-xl border-b border-stone-200 px-8 flex items-center justify-between sticky top-0 z-50">
       <div className="flex items-center gap-6">
-        <Link href="/" className="flex items-center gap-3 cursor-pointer group">
+        <Link href="/projects" className="flex items-center gap-3 cursor-pointer group">
           <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
             <TulipLogo className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-lg font-bold tracking-tight">TULLA</h1>
         </Link>
+
+        {/* Project Switcher */}
+        <ProjectSwitcher />
 
         {/* View Mode Selector */}
         <div className="flex bg-stone-100 p-1 rounded-xl">
@@ -110,7 +115,7 @@ export function Header({
         </button>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         {role === 'admin' && (
           <>
             <button
@@ -142,12 +147,11 @@ export function Header({
             </button>
           </>
         )}
-        <button
-          onClick={logout}
-          className="ml-4 text-stone-300 hover:text-rose-500 transition-colors"
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
+
+        {/* User Menu */}
+        <div className="ml-4">
+          <UserMenu />
+        </div>
       </div>
     </header>
   );
