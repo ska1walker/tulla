@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
+
     function isSignedIn() {
       return request.auth != null;
     }
@@ -42,57 +42,91 @@ service cloud.firestore {
       return isAdmin() || isProjectMember(projectId);
     }
 
+    // Validation helpers
+    function isValidEmail(email) {
+      return email is string && email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$');
+    }
+
+    function isValidProjectName(name) {
+      return name is string && name.size() > 0 && name.size() <= 200;
+    }
+
+    function isValidRole(role) {
+      return role in ['owner', 'editor', 'viewer'];
+    }
+
     // Users collection
     match /users/{userId} {
-      // Users can read their own profile
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
 
-      // Users can create their own profile
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() &&
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['email', 'createdAt']) &&
+        isValidEmail(request.resource.data.email) &&
+        request.resource.data.isAdmin == false &&
+        request.resource.data.isBanned == false;
 
-      // Users can update their own non-admin fields
-      // Admins can update any user
       allow update: if isSignedIn() && (
         (request.auth.uid == userId &&
          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'isBanned'])) ||
         isAdmin()
       );
 
-      // Only admins can delete users
       allow delete: if isAdmin();
     }
 
     // Projects collection
     match /projects/{projectId} {
-      // Anyone signed in can create a project
       allow create: if isSignedIn() && isNotBanned() &&
-        request.resource.data.ownerId == request.auth.uid;
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['name', 'ownerId', 'createdAt']) &&
+        isValidProjectName(request.resource.data.name);
 
-      // Project members can read
       allow read: if canViewProject(projectId);
 
-      // Owner and editors can update
-      allow update: if canEditProject(projectId);
+      allow update: if canEditProject(projectId) &&
+        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['ownerId']) || isAdmin());
 
-      // Only owner or admin can delete
       allow delete: if isAdmin() || isProjectOwner(projectId);
 
       // Project members subcollection
       match /members/{memberId} {
         allow read: if canViewProject(projectId);
-        allow create, update, delete: if isAdmin() || isProjectOwner(projectId);
+
+        allow create: if (isAdmin() || isProjectOwner(projectId)) &&
+          request.resource.data.keys().hasAll(['role', 'joinedAt']) &&
+          isValidRole(request.resource.data.role);
+
+        allow update: if (isAdmin() || isProjectOwner(projectId)) &&
+          isValidRole(request.resource.data.role) &&
+          (resource.data.role != 'owner' || isAdmin());
+
+        allow delete: if (isAdmin() || isProjectOwner(projectId)) &&
+          resource.data.role != 'owner';
       }
 
       // Campaigns subcollection
       match /campaigns/{campaignId} {
         allow read: if canViewProject(projectId);
-        allow create, update, delete: if canEditProject(projectId);
+
+        allow create: if canEditProject(projectId) &&
+          request.resource.data.keys().hasAll(['name', 'channelId', 'type', 'startDate', 'endDate']) &&
+          request.resource.data.type in ['image', 'sales'];
+
+        allow update: if canEditProject(projectId);
+        allow delete: if canEditProject(projectId);
       }
 
       // Channels subcollection
       match /channels/{channelId} {
         allow read: if canViewProject(projectId);
-        allow create, update, delete: if canEditProject(projectId);
+
+        allow create: if canEditProject(projectId) &&
+          request.resource.data.keys().hasAll(['name']) &&
+          request.resource.data.name is string &&
+          request.resource.data.name.size() > 0;
+
+        allow update, delete: if canEditProject(projectId);
       }
 
       // Settings subcollection
@@ -104,33 +138,35 @@ service cloud.firestore {
 
     // Invitations collection
     match /invitations/{invitationId} {
-      // Admins and project owners can read invitations
       allow read: if isSignedIn() && (
         isAdmin() ||
         resource.data.invitedBy == request.auth.uid ||
-        isProjectOwner(resource.data.projectId)
+        (request.auth.token.email_verified == true &&
+         resource.data.email.lower() == request.auth.token.email.lower())
       );
 
-      // Project owners can create invitations
-      allow create: if isSignedIn() && isNotBanned() && (
-        isAdmin() ||
-        isProjectOwner(request.resource.data.projectId)
-      );
+      allow create: if isSignedIn() && isNotBanned() &&
+        (isAdmin() || isProjectOwner(request.resource.data.projectId)) &&
+        request.resource.data.keys().hasAll(['projectId', 'email', 'role', 'token', 'status', 'invitedBy', 'createdAt', 'expiresAt']) &&
+        isValidEmail(request.resource.data.email) &&
+        isValidRole(request.resource.data.role) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.invitedBy == request.auth.uid;
 
-      // Invitation can be updated (accepted, cancelled) by recipient or creator
       allow update: if isSignedIn() && (
         isAdmin() ||
         resource.data.invitedBy == request.auth.uid ||
-        resource.data.email == request.auth.token.email
-      );
+        (request.auth.token.email_verified == true &&
+         resource.data.email.lower() == request.auth.token.email.lower())
+      ) && request.resource.data.status in ['pending', 'accepted', 'expired', 'cancelled'];
 
-      // Only admins or creators can delete
       allow delete: if isAdmin() || resource.data.invitedBy == request.auth.uid;
     }
 
-    // Legacy artifacts collection (for backwards compatibility)
+    // Legacy artifacts collection - restricted
     match /artifacts/{document=**} {
-      allow read, write: if isSignedIn() && isNotBanned();
+      allow read: if isSignedIn() && isNotBanned();
+      allow write: if false;
     }
   }
 }

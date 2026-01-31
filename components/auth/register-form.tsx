@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
+import { isValidEmail, validatePassword, isValidDisplayName, sanitizeInput } from '@/lib/utils';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -23,18 +24,27 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     clearError();
     setLocalError(null);
 
+    // Validate email
     if (!email.trim()) {
       setLocalError('Bitte geben Sie Ihre E-Mail-Adresse ein.');
       return;
     }
 
-    if (!password) {
-      setLocalError('Bitte geben Sie ein Passwort ein.');
+    if (!isValidEmail(email.trim())) {
+      setLocalError('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
       return;
     }
 
-    if (password.length < 6) {
-      setLocalError('Das Passwort muss mindestens 6 Zeichen lang sein.');
+    // Validate display name
+    if (displayName.trim() && !isValidDisplayName(displayName)) {
+      setLocalError('Der Name enthält ungültige Zeichen oder ist zu lang (max. 100 Zeichen).');
+      return;
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setLocalError(passwordValidation.message);
       return;
     }
 
@@ -45,9 +55,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     try {
       await register({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         password,
-        displayName: displayName.trim() || undefined,
+        displayName: sanitizeInput(displayName) || undefined,
       });
       onSuccess?.();
     } catch {
@@ -77,6 +87,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
           placeholder="Max Mustermann"
           autoComplete="name"
+          maxLength={100}
           disabled={isLoading}
         />
       </div>
@@ -108,8 +119,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 pr-12 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
-            placeholder="Mindestens 6 Zeichen"
+            placeholder="Mind. 8 Zeichen, Buchstaben + Zahl"
             autoComplete="new-password"
+            maxLength={128}
             disabled={isLoading}
           />
           <button
@@ -120,6 +132,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
         </div>
+        <p className="mt-1 text-xs text-stone-400">
+          Mindestens 8 Zeichen, mit Buchstaben und Zahlen
+        </p>
       </div>
 
       <div>
@@ -134,6 +149,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
           placeholder="Passwort wiederholen"
           autoComplete="new-password"
+          maxLength={128}
           disabled={isLoading}
         />
       </div>

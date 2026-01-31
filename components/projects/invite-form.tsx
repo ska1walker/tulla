@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
 import { ProjectRole } from '@/types';
+import { isValidEmail } from '@/lib/utils';
 
 interface InviteFormProps {
   onInvite: (email: string, role: ProjectRole) => Promise<void>;
@@ -26,9 +27,7 @@ export function InviteForm({ onInvite, disabled }: InviteFormProps) {
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (!isValidEmail(email.trim())) {
       setError('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
       return;
     }

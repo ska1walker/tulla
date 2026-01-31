@@ -218,6 +218,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await logoutUser();
       setCurrentProjectState(null);
       setCurrentProjectRole(null);
+
+      // Clear all sensitive data from localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('currentProjectId');
+        localStorage.removeItem('pendingInvitationToken');
+        localStorage.removeItem('emailForSignIn');
+        sessionStorage.clear();
+      }
     } catch (err: unknown) {
       console.error('Logout error:', err);
     } finally {
