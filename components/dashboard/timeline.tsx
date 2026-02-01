@@ -114,7 +114,7 @@ export function Timeline({
 
   return (
     <div
-      className="bg-white rounded-[2.5rem] border border-stone-200 shadow-2xl overflow-hidden"
+      className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden"
       style={{ minWidth: `${100 * zoomLevel}%` }}
     >
       {/* Header with month labels */}
