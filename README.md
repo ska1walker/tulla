@@ -1,4 +1,4 @@
-# maiflo - Liebevolle Kampagnensteuerung
+# maiflow - Liebevolle Kampagnensteuerung
 
 Marketing-Kampagnenplanung mit Emotion und Klarheit.
 
@@ -40,7 +40,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Project Structure
 
 ```
-maiflo/
+maiflow/
 ├── app/                    # Next.js App Router pages
 │   ├── layout.tsx          # Root layout with AuthProvider
 │   ├── page.tsx            # Landing page (Server Component)

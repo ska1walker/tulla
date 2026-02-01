@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
             <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
               <TulipLogo className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-lg font-bold tracking-tight">maiflo</h1>
+            <h1 className="text-lg tracking-tight"><span className="font-black text-stone-900">mai</span><span className="font-light text-rose-500 italic">flow</span></h1>
           </Link>
           <span className="px-2 py-1 bg-rose-100 text-rose-700 rounded-lg text-xs font-bold">
             ADMIN

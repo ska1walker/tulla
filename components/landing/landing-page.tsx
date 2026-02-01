@@ -7,17 +7,20 @@ export function LandingPage() {
     <div className="min-h-screen bg-[#FAF9F6] text-stone-900 overflow-x-hidden font-sans selection:bg-rose-100">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center bg-[#FAF9F6]/80 backdrop-blur-md">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-rose-200/50 transition-transform hover:scale-105">
             <TulipLogo className="w-6 h-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight">maiflo</span>
+          <span className="text-2xl tracking-tight">
+            <span className="font-black text-stone-900">mai</span>
+            <span className="font-light text-rose-500 italic">flow</span>
+          </span>
         </div>
         <Link
           href="/login"
           className="px-6 py-2.5 bg-stone-900 text-white text-sm font-bold rounded-full hover:bg-black transition-all shadow-lg active:scale-95"
         >
-          Jetzt starten
+          Anmelden
         </Link>
       </nav>
 
@@ -31,7 +34,7 @@ export function LandingPage() {
           <span className="text-rose-500 italic font-light">in voller Blüte.</span>
         </h1>
         <p className="text-xl text-stone-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-          maiflo bringt Emotion und Klarheit in deine Kampagnenplanung – intuitiv, ästhetisch und
+          maiflow bringt Emotion und Klarheit in deine Kampagnenplanung – intuitiv, ästhetisch und
           mit dem Blick für das Wesentliche.
         </p>
         <div className="flex justify-center gap-4">
@@ -147,13 +150,19 @@ export function LandingPage() {
       {/* Footer */}
       <footer className="py-20 bg-stone-900 text-white text-center px-8">
         <div className="max-w-4xl mx-auto">
-          <TulipLogo className="w-12 h-12 mx-auto mb-8 text-rose-500" />
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <TulipLogo className="w-10 h-10 text-rose-500" />
+            <span className="text-3xl tracking-tight">
+              <span className="font-black text-white">mai</span>
+              <span className="font-light text-rose-500 italic">flow</span>
+            </span>
+          </div>
           <p className="text-2xl font-light text-stone-400 leading-relaxed mb-12 italic">
-            &ldquo;Wir glauben, dass großartiges Marketing Ruhe braucht. maiflo wurde entwickelt, um
+            &ldquo;Wir glauben, dass großartiges Marketing Ruhe braucht. maiflow wurde entwickelt, um
             Platz für kreative Strategien zu schaffen.&rdquo;
           </p>
           <div className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.3em]">
-            &copy; 2026 Kai Böhm Copyright
+            &copy; 2026 Kai Böhm
           </div>
         </div>
       </footer>
