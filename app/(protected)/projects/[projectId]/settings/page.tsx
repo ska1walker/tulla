@@ -3,16 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Loader2, Trash2, Users, Settings, Save } from 'lucide-react';
+import { ArrowLeft, Loader2, Trash2, Users, Settings, Save, Palette } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { UserMenu } from '@/components/ui/user-menu';
 import { MemberList } from '@/components/projects/member-list';
 import { InviteForm } from '@/components/projects/invite-form';
+import { CampaignTypeManager } from '@/components/projects/campaign-type-manager';
 import { useAuth } from '@/contexts/auth-context';
 import { useProjects } from '@/hooks/use-projects';
 import { useProjectMembers } from '@/hooks/use-project-members';
 import { useInvitations } from '@/hooks/use-invitations';
 import { usePermissions } from '@/hooks/use-permissions';
+import { useCampaignTypes } from '@/hooks/use-campaign-types';
 import { ProjectRole } from '@/types';
 
 export default function ProjectSettingsPage() {
@@ -25,12 +27,13 @@ export default function ProjectSettingsPage() {
   const { members, loading: membersLoading, updateMemberRole, removeMember } = useProjectMembers(projectId);
   const { createInvitation } = useInvitations(projectId);
   const { canEditProject, canDeleteProject, canManageMembers, canInviteMembers } = usePermissions(projectId);
+  const { campaignTypes, addCampaignType, updateCampaignType, deleteCampaignType } = useCampaignTypes(projectId);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<'general' | 'members'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'types' | 'members'>('general');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Load project data
@@ -137,6 +140,17 @@ export default function ProjectSettingsPage() {
             >
               <Settings className="w-4 h-4" />
               Allgemein
+            </button>
+            <button
+              onClick={() => setActiveTab('types')}
+              className={`flex-1 px-6 py-4 font-medium transition-colors flex items-center justify-center gap-2 ${
+                activeTab === 'types'
+                  ? 'text-rose-500 border-b-2 border-rose-500 bg-rose-50/50'
+                  : 'text-stone-500 hover:text-stone-700 hover:bg-stone-50'
+              }`}
+            >
+              <Palette className="w-4 h-4" />
+              Typen ({campaignTypes.length})
             </button>
             <button
               onClick={() => setActiveTab('members')}
@@ -262,6 +276,27 @@ export default function ProjectSettingsPage() {
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === 'types' && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">
+                    Kampagnentypen
+                  </h2>
+                  <p className="text-stone-500">
+                    Verwalten Sie die verfügbaren Kampagnentypen und ihre Farben.
+                  </p>
+                </div>
+
+                <CampaignTypeManager
+                  types={campaignTypes}
+                  onAdd={addCampaignType}
+                  onUpdate={updateCampaignType}
+                  onDelete={deleteCampaignType}
+                  disabled={!canEditProject}
+                />
               </div>
             )}
 

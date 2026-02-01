@@ -2,7 +2,7 @@ export interface Campaign {
   id: string;
   name: string;
   channelId: string;
-  type: 'image' | 'sales';
+  typeId: string; // Reference to CampaignType.id
   startDate: string | Date;
   endDate: string | Date;
   budgetPlanned?: number;

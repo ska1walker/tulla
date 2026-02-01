@@ -7,11 +7,12 @@ import { Header } from '@/components/dashboard/header';
 import { Timeline } from '@/components/dashboard/timeline';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { CampaignTooltip } from '@/components/dashboard/campaign-tooltip';
-import { CampaignModal, ChannelModal, PhaseModal, BrandingModal } from '@/components/modals';
+import { CampaignModal, ChannelModal, PhaseModal } from '@/components/modals';
 import { useAuth } from '@/contexts/auth-context';
 import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
 import { useSettings } from '@/hooks/use-settings';
+import { useCampaignTypes } from '@/hooks/use-campaign-types';
 import { useProjects } from '@/hooks/use-projects';
 import { Campaign } from '@/types';
 import { ZOOM_LEVELS, ViewMode, ZoomLevel } from '@/lib/constants';
@@ -25,7 +26,8 @@ export default function ProjectDashboardPage() {
   const { projects, loading: projectsLoading, getProjectRole } = useProjects();
   const { campaigns, saveCampaign, deleteCampaign } = useCampaigns(projectId);
   const { channels, saveChannel, deleteChannel } = useChannels(projectId);
-  const { phases, branding, savePhases, saveBranding } = useSettings(projectId);
+  const { phases, savePhases } = useSettings(projectId);
+  const { campaignTypes } = useCampaignTypes(projectId);
 
   // View state
   const [currentYear] = useState(new Date().getFullYear());
@@ -36,7 +38,6 @@ export default function ProjectDashboardPage() {
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign> | null>(null);
   const [isManagingChannels, setIsManagingChannels] = useState(false);
   const [isSettingPhases, setIsSettingPhases] = useState(false);
-  const [isSettingBranding, setIsSettingBranding] = useState(false);
 
   // Hover state
   const [hoveredCampaign, setHoveredCampaign] = useState<Campaign | null>(null);
@@ -93,7 +94,7 @@ export default function ProjectDashboardPage() {
       {hoveredCampaign && (
         <CampaignTooltip
           campaign={hoveredCampaign}
-          branding={branding}
+          campaignTypes={campaignTypes}
           mousePos={mousePos}
         />
       )}
@@ -105,7 +106,6 @@ export default function ProjectDashboardPage() {
         zoomLevel={zoomLevel}
         onViewModeChange={setViewMode}
         onZoomLevelChange={setZoomLevel}
-        onOpenBranding={() => setIsSettingBranding(true)}
         onOpenPhases={() => setIsSettingPhases(true)}
         onOpenChannels={() => setIsManagingChannels(true)}
         onNewCampaign={() => setEditingCampaign({})}
@@ -114,13 +114,13 @@ export default function ProjectDashboardPage() {
       {/* Main Content */}
       <main className="p-8 overflow-x-auto min-h-[calc(100vh-80px)] text-sm">
         {viewMode === 'analytics' ? (
-          <AnalyticsDashboard campaigns={campaigns} branding={branding} />
+          <AnalyticsDashboard campaigns={campaigns} campaignTypes={campaignTypes} />
         ) : (
           <Timeline
             campaigns={campaigns}
             channels={channels}
             phases={phases}
-            branding={branding}
+            campaignTypes={campaignTypes}
             viewMode={viewMode}
             zoomLevel={zoomLevel}
             currentYear={currentYear}
@@ -132,18 +132,11 @@ export default function ProjectDashboardPage() {
       </main>
 
       {/* Modals */}
-      {isSettingBranding && (
-        <BrandingModal
-          branding={branding}
-          onClose={() => setIsSettingBranding(false)}
-          onSave={saveBranding}
-        />
-      )}
-
       {editingCampaign && (
         <CampaignModal
           campaign={editingCampaign}
           channels={channels}
+          campaignTypes={campaignTypes}
           onClose={() => setEditingCampaign(null)}
           onSave={handleSaveCampaign}
           onDelete={editingCampaign.id ? handleDeleteCampaign : undefined}

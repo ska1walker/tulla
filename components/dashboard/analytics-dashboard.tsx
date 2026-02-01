@@ -1,29 +1,27 @@
 'use client';
 
 import { BarChart3, PieChart } from 'lucide-react';
-import { Campaign, Branding } from '@/types';
+import { Campaign, CampaignType } from '@/types';
 import { fmtCurrency, safeNum } from '@/lib/utils';
 
 interface AnalyticsDashboardProps {
   campaigns: Campaign[];
-  branding: Branding;
+  campaignTypes: CampaignType[];
 }
 
-export function AnalyticsDashboard({ campaigns, branding }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ campaigns, campaignTypes }: AnalyticsDashboardProps) {
   const totalActual = campaigns.reduce((acc, c) => acc + safeNum(c.budgetActual), 0);
   const totalPlanned = campaigns.reduce((acc, c) => acc + safeNum(c.budgetPlanned), 0);
   const budgetUtilization = totalPlanned > 0 ? (totalActual / totalPlanned) * 100 : 0;
 
-  const imageBudget = campaigns
-    .filter((c) => c.type === 'image')
-    .reduce((acc, c) => acc + safeNum(c.budgetActual), 0);
-  const salesBudget = campaigns
-    .filter((c) => c.type === 'sales')
-    .reduce((acc, c) => acc + safeNum(c.budgetActual), 0);
+  // Calculate budget per type
+  const typeStats = campaignTypes.map((type) => {
+    const typeCampaigns = campaigns.filter((c) => c.typeId === type.id);
+    const budget = typeCampaigns.reduce((acc, c) => acc + safeNum(c.budgetActual), 0);
+    return { type, budget };
+  });
 
-  const totalType = imageBudget + salesBudget;
-  const imagePercent = totalType > 0 ? (imageBudget / totalType) * 100 : 0;
-  const salesPercent = totalType > 0 ? (salesBudget / totalType) * 100 : 0;
+  const totalTypeBudget = typeStats.reduce((acc, s) => acc + s.budget, 0);
 
   return (
     <div className="space-y-8 p-2">
@@ -86,30 +84,46 @@ export function AnalyticsDashboard({ campaigns, branding }: AnalyticsDashboardPr
                 stroke="#e7e5e4"
                 strokeWidth="3.8"
               />
-              {totalType > 0 && (
-                <>
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15.915"
-                    fill="none"
-                    stroke={branding.imageColor}
-                    strokeWidth="3.8"
-                    strokeDasharray={`${imagePercent}, 100`}
-                  />
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15.915"
-                    fill="none"
-                    stroke={branding.salesColor}
-                    strokeWidth="3.8"
-                    strokeDasharray={`${salesPercent}, 100`}
-                    strokeDashoffset={-imagePercent}
-                  />
-                </>
-              )}
+              {totalTypeBudget > 0 &&
+                (() => {
+                  let offset = 0;
+                  return typeStats.map(({ type, budget }) => {
+                    const percent = (budget / totalTypeBudget) * 100;
+                    const circle = (
+                      <circle
+                        key={type.id}
+                        cx="18"
+                        cy="18"
+                        r="15.915"
+                        fill="none"
+                        stroke={type.color}
+                        strokeWidth="3.8"
+                        strokeDasharray={`${percent}, 100`}
+                        strokeDashoffset={-offset}
+                      />
+                    );
+                    offset += percent;
+                    return circle;
+                  });
+                })()}
             </svg>
+          </div>
+          {/* Legend */}
+          <div className="mt-4 space-y-1">
+            {typeStats
+              .filter((s) => s.budget > 0)
+              .map(({ type, budget }) => (
+                <div key={type.id} className="flex items-center gap-2 text-xs">
+                  <div
+                    className="w-3 h-3 rounded-sm"
+                    style={{ backgroundColor: type.color }}
+                  />
+                  <span className="text-stone-600 font-medium">{type.name}</span>
+                  <span className="text-stone-400">
+                    ({((budget / totalTypeBudget) * 100).toFixed(0)}%)
+                  </span>
+                </div>
+              ))}
           </div>
         </div>
       </div>

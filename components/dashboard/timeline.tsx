@@ -11,7 +11,7 @@ import {
   isAfter,
   setYear,
 } from 'date-fns';
-import { Campaign, Channel, Phases, Branding, PhaseKey } from '@/types';
+import { Campaign, Channel, Phases, PhaseKey, CampaignType } from '@/types';
 import { ViewMode, ZoomLevel } from '@/lib/constants';
 import { toDate, fmtDate } from '@/lib/utils';
 
@@ -19,7 +19,7 @@ interface TimelineProps {
   campaigns: Campaign[];
   channels: Channel[];
   phases: Phases;
-  branding: Branding;
+  campaignTypes: CampaignType[];
   viewMode: ViewMode;
   zoomLevel: ZoomLevel;
   currentYear: number;
@@ -32,7 +32,7 @@ export function Timeline({
   campaigns,
   channels,
   phases,
-  branding,
+  campaignTypes,
   viewMode,
   zoomLevel,
   currentYear,
@@ -40,6 +40,11 @@ export function Timeline({
   onEditCampaign,
   onHoverCampaign,
 }: TimelineProps) {
+  // Helper to get color for a campaign type
+  const getTypeColor = (typeId: string): string => {
+    const type = campaignTypes.find((t) => t.id === typeId);
+    return type?.color || '#E5E7EB';
+  };
   // Calculate timeline range
   const timeline = useMemo(() => {
     const yearStart = startOfYear(new Date(currentYear, 0, 1));
@@ -162,7 +167,7 @@ export function Timeline({
                       className="absolute top-1/2 -translate-y-1/2 h-8 rounded-lg shadow-sm border-stone-900/10 border-b-2 transition-all cursor-pointer z-10"
                       style={{
                         ...style,
-                        background: branding[`${c.type}Color` as keyof Branding] || '#ccc',
+                        background: getTypeColor(c.typeId),
                       }}
                     />
                   );

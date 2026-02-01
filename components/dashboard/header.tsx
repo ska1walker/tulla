@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Settings, Clock, Palette, LayoutDashboard } from 'lucide-react';
+import { Plus, Settings, Clock, LayoutDashboard } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { ProjectSwitcher } from '@/components/ui/project-switcher';
 import { UserMenu } from '@/components/ui/user-menu';
@@ -15,7 +15,6 @@ interface HeaderProps {
   zoomLevel: ZoomLevel;
   onViewModeChange: (mode: ViewMode) => void;
   onZoomLevelChange: (level: ZoomLevel) => void;
-  onOpenBranding: () => void;
   onOpenPhases: () => void;
   onOpenChannels: () => void;
   onNewCampaign: () => void;
@@ -27,7 +26,6 @@ export function Header({
   zoomLevel,
   onViewModeChange,
   onZoomLevelChange,
-  onOpenBranding,
   onOpenPhases,
   onOpenChannels,
   onNewCampaign,
@@ -129,13 +127,6 @@ export function Header({
       <div className="flex items-center gap-2">
         {role === 'admin' && (
           <>
-            <button
-              onClick={onOpenBranding}
-              className="p-2.5 bg-white border border-stone-200 rounded-xl text-stone-500 hover:text-rose-500 transition-colors"
-              title="Design"
-            >
-              <Palette className="w-4 h-4" />
-            </button>
             <button
               onClick={onOpenPhases}
               className="p-2.5 bg-white border border-stone-200 rounded-xl text-stone-500 hover:text-rose-500 transition-colors"

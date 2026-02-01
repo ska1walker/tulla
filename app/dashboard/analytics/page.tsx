@@ -5,11 +5,11 @@ import { ArrowLeft } from 'lucide-react';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { useCampaigns } from '@/hooks/use-campaigns';
-import { useSettings } from '@/hooks/use-settings';
+import { useCampaignTypes } from '@/hooks/use-campaign-types';
 
 export default function AnalyticsPage() {
   const { campaigns } = useCampaigns();
-  const { branding } = useSettings();
+  const { campaignTypes } = useCampaignTypes();
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans text-sm selection:bg-rose-100">
@@ -36,7 +36,7 @@ export default function AnalyticsPage() {
 
       {/* Main Content */}
       <main className="p-8">
-        <AnalyticsDashboard campaigns={campaigns} branding={branding} />
+        <AnalyticsDashboard campaigns={campaigns} campaignTypes={campaignTypes} />
       </main>
     </div>
   );

@@ -3,11 +3,12 @@
 import { FormEvent } from 'react';
 import { Euro } from 'lucide-react';
 import { Modal } from '@/components/ui/modal';
-import { Campaign, Channel } from '@/types';
+import { Campaign, Channel, CampaignType } from '@/types';
 
 interface CampaignModalProps {
   campaign: Partial<Campaign>;
   channels: Channel[];
+  campaignTypes: CampaignType[];
   onClose: () => void;
   onSave: (data: Partial<Campaign>) => void;
   onDelete?: (id: string) => void;
@@ -16,6 +17,7 @@ interface CampaignModalProps {
 export function CampaignModal({
   campaign,
   channels,
+  campaignTypes,
   onClose,
   onSave,
   onDelete,
@@ -105,12 +107,15 @@ export function CampaignModal({
               Typ
             </label>
             <select
-              name="type"
-              defaultValue={campaign.type || 'image'}
+              name="typeId"
+              defaultValue={campaign.typeId || campaignTypes[0]?.id}
               className="w-full p-3 border border-stone-200 bg-stone-50 rounded-xl font-bold outline-none"
             >
-              <option value="image">Image</option>
-              <option value="sales">Sales</option>
+              {campaignTypes.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>

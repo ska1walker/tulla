@@ -1,4 +1,5 @@
 export * from './campaign';
+export * from './campaign-type';
 export * from './channel';
 export * from './phase';
 export * from './branding';
