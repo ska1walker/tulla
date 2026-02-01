@@ -104,7 +104,15 @@ export default function ProjectDashboardPage() {
       {/* Main Content */}
       <main className="p-8 overflow-x-auto min-h-[calc(100vh-80px)] text-sm">
         {viewMode === 'analytics' ? (
-          <AnalyticsDashboard campaigns={campaigns} campaignTypes={campaignTypes} />
+          <AnalyticsDashboard
+            campaigns={campaigns}
+            campaignTypes={campaignTypes}
+            channels={channels}
+            phases={phases}
+            viewMode={viewMode}
+            currentYear={currentYear}
+            onViewModeChange={setViewMode}
+          />
         ) : (
           <Timeline
             campaigns={campaigns}

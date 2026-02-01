@@ -1,15 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { useCampaigns } from '@/hooks/use-campaigns';
+import { useChannels } from '@/hooks/use-channels';
+import { useSettings } from '@/hooks/use-settings';
 import { useCampaignTypes } from '@/hooks/use-campaign-types';
+import { ViewMode } from '@/lib/constants';
 
 export default function AnalyticsPage() {
   const { campaigns } = useCampaigns();
+  const { channels } = useChannels();
+  const { phases } = useSettings();
   const { campaignTypes } = useCampaignTypes();
+
+  const [currentYear] = useState(new Date().getFullYear());
+  const [viewMode, setViewMode] = useState<ViewMode>('analytics');
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans text-sm selection:bg-rose-100">
@@ -39,7 +48,15 @@ export default function AnalyticsPage() {
 
       {/* Main Content */}
       <main className="p-8">
-        <AnalyticsDashboard campaigns={campaigns} campaignTypes={campaignTypes} />
+        <AnalyticsDashboard
+          campaigns={campaigns}
+          campaignTypes={campaignTypes}
+          channels={channels}
+          phases={phases}
+          viewMode={viewMode}
+          currentYear={currentYear}
+          onViewModeChange={setViewMode}
+        />
       </main>
     </div>
   );
