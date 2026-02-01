@@ -1,6 +1,12 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  Firestore,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,6 +21,7 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
+let firestoreInitialized = false;
 
 export function getFirebaseApp(): FirebaseApp {
   if (!app) {
@@ -32,7 +39,24 @@ export function getFirebaseAuth(): Auth {
 
 export function getFirebaseDb(): Firestore {
   if (!db) {
-    db = getFirestore(getFirebaseApp());
+    const firebaseApp = getFirebaseApp();
+
+    // Try to initialize with persistence, fall back to regular getFirestore
+    if (!firestoreInitialized) {
+      try {
+        db = initializeFirestore(firebaseApp, {
+          localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager(),
+          }),
+        });
+        firestoreInitialized = true;
+      } catch {
+        // Firestore already initialized, use existing instance
+        db = getFirestore(firebaseApp);
+      }
+    } else {
+      db = getFirestore(firebaseApp);
+    }
   }
   return db;
 }
