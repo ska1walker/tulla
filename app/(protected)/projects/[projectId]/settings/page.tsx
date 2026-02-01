@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Loader2, Trash2, Users, Settings, Save, Palette, Layers, Clock } from 'lucide-react';
+import { ArrowLeft, Loader2, Trash2, Users, Settings, Save, Palette, Layers, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { UserMenu } from '@/components/ui/user-menu';
 import { MemberList } from '@/components/projects/member-list';
@@ -21,8 +21,9 @@ import { useCampaignTypes } from '@/hooks/use-campaign-types';
 import { useChannels } from '@/hooks/use-channels';
 import { useSettings } from '@/hooks/use-settings';
 import { ProjectRole } from '@/types';
+import { DEFAULT_BRANDING } from '@/lib/constants';
 
-type TabKey = 'general' | 'channels' | 'phases' | 'types' | 'members';
+type TabKey = 'general' | 'channels' | 'phases' | 'types' | 'design' | 'members';
 
 export default function ProjectSettingsPage() {
   const params = useParams();
@@ -36,7 +37,7 @@ export default function ProjectSettingsPage() {
   const { canEditProject, canDeleteProject, canInviteMembers } = usePermissions(projectId);
   const { campaignTypes, addCampaignType, updateCampaignType, deleteCampaignType } = useCampaignTypes(projectId);
   const { channels, saveChannel, deleteChannel } = useChannels(projectId);
-  const { phases, savePhases } = useSettings(projectId);
+  const { phases, branding, savePhases, saveBranding } = useSettings(projectId);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -117,6 +118,7 @@ export default function ProjectSettingsPage() {
     { key: 'channels', label: 'Kanäle', icon: <Layers className="w-4 h-4" />, count: channels.length },
     { key: 'phases', label: 'Phasen', icon: <Clock className="w-4 h-4" /> },
     { key: 'types', label: 'Typen', icon: <Palette className="w-4 h-4" />, count: campaignTypes.length },
+    { key: 'design', label: 'Design', icon: <TrendingUp className="w-4 h-4" /> },
     { key: 'members', label: 'Team', icon: <Users className="w-4 h-4" />, count: members.length + pendingInvitations.length },
   ];
 
@@ -325,6 +327,95 @@ export default function ProjectSettingsPage() {
                   onDelete={deleteCampaignType}
                   disabled={!canEditProject}
                 />
+              </div>
+            )}
+
+            {/* Design Tab */}
+            {activeTab === 'design' && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">Analyse-Design</h2>
+                  <p className="text-stone-500">
+                    Passen Sie die Farben für das Analytics-Dashboard an.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Positive Color */}
+                  <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: branding.positiveColor || DEFAULT_BRANDING.positiveColor }}>
+                        <TrendingDown className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-stone-900">Positiv / Unter Budget</h3>
+                        <p className="text-xs text-stone-500">Wenn Ausgaben unter dem Plan liegen</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={branding.positiveColor || DEFAULT_BRANDING.positiveColor}
+                        onChange={(e) => saveBranding({ ...branding, positiveColor: e.target.value })}
+                        className="w-12 h-12 rounded-lg cursor-pointer border-0"
+                        disabled={!canEditProject}
+                      />
+                      <input
+                        type="text"
+                        value={branding.positiveColor || DEFAULT_BRANDING.positiveColor}
+                        onChange={(e) => saveBranding({ ...branding, positiveColor: e.target.value })}
+                        className="flex-1 px-3 py-2 bg-white border border-stone-200 rounded-lg text-sm font-mono uppercase"
+                        disabled={!canEditProject}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Negative Color */}
+                  <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: branding.negativeColor || DEFAULT_BRANDING.negativeColor }}>
+                        <TrendingUp className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-stone-900">Negativ / Über Budget</h3>
+                        <p className="text-xs text-stone-500">Wenn Ausgaben über dem Plan liegen</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={branding.negativeColor || DEFAULT_BRANDING.negativeColor}
+                        onChange={(e) => saveBranding({ ...branding, negativeColor: e.target.value })}
+                        className="w-12 h-12 rounded-lg cursor-pointer border-0"
+                        disabled={!canEditProject}
+                      />
+                      <input
+                        type="text"
+                        value={branding.negativeColor || DEFAULT_BRANDING.negativeColor}
+                        onChange={(e) => saveBranding({ ...branding, negativeColor: e.target.value })}
+                        className="flex-1 px-3 py-2 bg-white border border-stone-200 rounded-lg text-sm font-mono uppercase"
+                        disabled={!canEditProject}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div className="p-4 bg-white rounded-xl border border-stone-200">
+                  <h3 className="font-medium text-stone-900 mb-4">Vorschau</h3>
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-4 rounded" style={{ backgroundColor: branding.positiveColor || DEFAULT_BRANDING.positiveColor }} />
+                      <TrendingDown className="w-4 h-4" style={{ color: branding.positiveColor || DEFAULT_BRANDING.positiveColor }} />
+                      <span className="text-sm text-stone-600">Unter Budget</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-4 rounded" style={{ backgroundColor: branding.negativeColor || DEFAULT_BRANDING.negativeColor }} />
+                      <TrendingUp className="w-4 h-4" style={{ color: branding.negativeColor || DEFAULT_BRANDING.negativeColor }} />
+                      <span className="text-sm text-stone-600">Über Budget</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

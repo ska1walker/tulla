@@ -49,6 +49,13 @@ export function Header({
             <span className="font-light text-rose-500 italic">flow</span>
           </h1>
         </Link>
+        <Link
+          href="/credits"
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-stone-100 hover:bg-rose-100 text-stone-400 hover:text-rose-500 transition-all hover:scale-110"
+          title="Credits"
+        >
+          <span className="text-sm">🎮</span>
+        </Link>
 
         {/* Project Switcher */}
         <ProjectSwitcher />

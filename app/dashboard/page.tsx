@@ -98,6 +98,7 @@ export default function DashboardPage() {
             channels={channels}
             phases={phases}
             currentYear={currentYear}
+            branding={branding}
           />
         ) : (
           <Timeline

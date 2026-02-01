@@ -161,6 +161,13 @@ export function LandingPage() {
             &ldquo;Wir glauben, dass großartiges Marketing Ruhe braucht. maiflow wurde entwickelt, um
             Platz für kreative Strategien zu schaffen.&rdquo;
           </p>
+          <Link
+            href="/credits"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-stone-800 hover:bg-rose-500 text-stone-400 hover:text-white rounded-lg transition-all duration-300 group mb-6"
+          >
+            <span className="font-mono text-xs tracking-wider">INSERT COIN</span>
+            <span className="text-lg group-hover:animate-pulse">🎮</span>
+          </Link>
           <div className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.3em]">
             &copy; 2026 Kai Böhm
           </div>

@@ -50,6 +50,8 @@ export const DEFAULT_BRANDING: Branding = {
   salesColor: '#FECACA',
   exportPrimaryColor: '#3B82F6',
   exportAccentColor: '#F43F5E',
+  positiveColor: '#10B981',   // Emerald-500 - under budget
+  negativeColor: '#EF4444',   // Red-500 - over budget
 };
 
 // LocalStorage Keys

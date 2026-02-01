@@ -121,6 +121,7 @@ export default function ProjectDashboardPage() {
             channels={channels}
             phases={phases}
             currentYear={currentYear}
+            branding={branding}
           />
         ) : (
           <Timeline
