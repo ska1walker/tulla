@@ -110,8 +110,9 @@ service cloud.firestore {
         allow read: if canViewProject(projectId);
 
         allow create: if canEditProject(projectId) &&
-          request.resource.data.keys().hasAll(['name', 'channelId', 'type', 'startDate', 'endDate']) &&
-          request.resource.data.type in ['image', 'sales'];
+          request.resource.data.keys().hasAll(['name', 'channelId', 'typeId', 'startDate', 'endDate']) &&
+          request.resource.data.typeId is string &&
+          request.resource.data.typeId.size() > 0;
 
         allow update: if canEditProject(projectId);
         allow delete: if canEditProject(projectId);

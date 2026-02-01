@@ -178,14 +178,16 @@ export function useProjects() {
 
       const projectData: ProjectData = {
         name: data.name,
-        description: data.description,
         ownerId: user.uid,
         createdAt: new Date(),
+        ...(data.description && { description: data.description }),
       };
 
       const docRef = await addDoc(collection(db, 'projects'), {
-        ...projectData,
+        name: data.name,
+        ownerId: user.uid,
         createdAt: serverTimestamp(),
+        ...(data.description && { description: data.description }),
       });
 
       // Add owner as member
