@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PieChart } from 'lucide-react';
 import {
   BarChart,
@@ -12,7 +12,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Campaign, CampaignType, Channel, Phases, PhaseKey } from '@/types';
-import { ViewMode } from '@/lib/constants';
 import { fmtCurrency, safeNum } from '@/lib/utils';
 import { toDate, setYear, isAfter, isBefore } from 'date-fns';
 
@@ -21,9 +20,7 @@ interface AnalyticsDashboardProps {
   campaignTypes: CampaignType[];
   channels: Channel[];
   phases: Phases;
-  viewMode: ViewMode;
   currentYear: number;
-  onViewModeChange: (mode: ViewMode) => void;
 }
 
 interface ChannelBudget {
@@ -46,14 +43,14 @@ interface PhaseBudget {
 function filterCampaignsByPhase(
   campaigns: Campaign[],
   phases: Phases,
-  viewMode: ViewMode,
+  filter: 'all' | PhaseKey,
   currentYear: number
 ): Campaign[] {
-  if (viewMode === 'year' || viewMode === 'analytics') {
+  if (filter === 'all') {
     return campaigns;
   }
 
-  const phase = phases[viewMode as PhaseKey];
+  const phase = phases[filter];
   const phaseStart = setYear(toDate(phase.start), currentYear);
   const phaseEnd = setYear(toDate(phase.end), currentYear);
 
@@ -104,27 +101,30 @@ function calculatePhaseBudgets(
   });
 }
 
-// Phase filter tabs
-const PHASE_TABS: { key: ViewMode; label: string }[] = [
-  { key: 'analytics', label: 'Gesamt' },
+// Phase filter tabs for analytics view
+const PHASE_TABS: { key: 'all' | 'phase1' | 'phase2' | 'phase3'; label: string }[] = [
+  { key: 'all', label: 'Gesamt' },
   { key: 'phase1', label: 'Phase 1' },
   { key: 'phase2', label: 'Phase 2' },
   { key: 'phase3', label: 'Phase 3' },
 ];
+
+// Internal filter type for analytics (not affecting main view)
+type AnalyticsFilter = 'all' | 'phase1' | 'phase2' | 'phase3';
 
 export function AnalyticsDashboard({
   campaigns,
   campaignTypes,
   channels,
   phases,
-  viewMode,
   currentYear,
-  onViewModeChange,
 }: AnalyticsDashboardProps) {
+  // Local state for phase filtering (doesn't affect main navigation)
+  const [activeFilter, setActiveFilter] = useState<AnalyticsFilter>('all');
   // Filter campaigns by current phase selection
   const filteredCampaigns = useMemo(
-    () => filterCampaignsByPhase(campaigns, phases, viewMode, currentYear),
-    [campaigns, phases, viewMode, currentYear]
+    () => filterCampaignsByPhase(campaigns, phases, activeFilter, currentYear),
+    [campaigns, phases, activeFilter, currentYear]
   );
 
   // Calculate totals for filtered campaigns
@@ -166,9 +166,9 @@ export function AnalyticsDashboard({
         {PHASE_TABS.map((tab) => (
           <button
             key={tab.key}
-            onClick={() => onViewModeChange(tab.key)}
+            onClick={() => setActiveFilter(tab.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              (viewMode === tab.key || (viewMode === 'analytics' && tab.key === 'analytics'))
+              activeFilter === tab.key
                 ? 'bg-rose-500 text-white'
                 : 'bg-white text-stone-600 border border-stone-200 hover:border-rose-300'
             }`}

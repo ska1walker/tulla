@@ -9,7 +9,6 @@ import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
 import { useSettings } from '@/hooks/use-settings';
 import { useCampaignTypes } from '@/hooks/use-campaign-types';
-import { ViewMode } from '@/lib/constants';
 
 export default function AnalyticsPage() {
   const { campaigns } = useCampaigns();
@@ -18,7 +17,6 @@ export default function AnalyticsPage() {
   const { campaignTypes } = useCampaignTypes();
 
   const [currentYear] = useState(new Date().getFullYear());
-  const [viewMode, setViewMode] = useState<ViewMode>('analytics');
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans text-sm selection:bg-rose-100">
@@ -53,9 +51,7 @@ export default function AnalyticsPage() {
           campaignTypes={campaignTypes}
           channels={channels}
           phases={phases}
-          viewMode={viewMode}
           currentYear={currentYear}
-          onViewModeChange={setViewMode}
         />
       </main>
     </div>

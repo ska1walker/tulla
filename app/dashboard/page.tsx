@@ -86,9 +86,7 @@ export default function DashboardPage() {
             campaignTypes={campaignTypes}
             channels={channels}
             phases={phases}
-            viewMode={viewMode}
             currentYear={currentYear}
-            onViewModeChange={setViewMode}
           />
         ) : (
           <Timeline
