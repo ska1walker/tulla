@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Settings, Clock, LayoutDashboard } from 'lucide-react';
+import { Plus, Settings, LayoutDashboard } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { ProjectSwitcher } from '@/components/ui/project-switcher';
 import { UserMenu } from '@/components/ui/user-menu';
@@ -15,8 +15,6 @@ interface HeaderProps {
   zoomLevel: ZoomLevel;
   onViewModeChange: (mode: ViewMode) => void;
   onZoomLevelChange: (level: ZoomLevel) => void;
-  onOpenPhases: () => void;
-  onOpenChannels: () => void;
   onNewCampaign: () => void;
 }
 
@@ -26,11 +24,9 @@ export function Header({
   zoomLevel,
   onViewModeChange,
   onZoomLevelChange,
-  onOpenPhases,
-  onOpenChannels,
   onNewCampaign,
 }: HeaderProps) {
-  const { role } = useAuth();
+  const { role, currentProject } = useAuth();
 
   const viewModes: { key: ViewMode; label: string }[] = [
     { key: 'year', label: 'Gesamt' },
@@ -130,20 +126,15 @@ export function Header({
       <div className="flex items-center gap-2">
         {role === 'admin' && (
           <>
-            <button
-              onClick={onOpenPhases}
-              className="p-2.5 bg-white border border-stone-200 rounded-xl text-stone-500 hover:text-rose-500 transition-colors"
-              title="Phasen"
-            >
-              <Clock className="w-4 h-4" />
-            </button>
-            <button
-              onClick={onOpenChannels}
-              className="p-2.5 bg-white border border-stone-200 rounded-xl text-stone-500 hover:text-rose-500 transition-colors"
-              title="Kanäle"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
+            {currentProject && (
+              <Link
+                href={`/projects/${currentProject.id}/settings`}
+                className="p-2.5 bg-white border border-stone-200 rounded-xl text-stone-500 hover:text-rose-500 transition-colors"
+                title="Projekteinstellungen"
+              >
+                <Settings className="w-4 h-4" />
+              </Link>
+            )}
             <button
               onClick={onNewCampaign}
               className="flex items-center gap-2 px-5 py-2.5 bg-rose-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-rose-200 hover:bg-rose-600 transition-all active:scale-95"

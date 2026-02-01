@@ -7,7 +7,7 @@ import { Header } from '@/components/dashboard/header';
 import { Timeline } from '@/components/dashboard/timeline';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { CampaignTooltip } from '@/components/dashboard/campaign-tooltip';
-import { CampaignModal, ChannelModal, PhaseModal } from '@/components/modals';
+import { CampaignModal } from '@/components/modals';
 import { useAuth } from '@/contexts/auth-context';
 import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
@@ -23,10 +23,10 @@ export default function ProjectDashboardPage() {
   const projectId = params.projectId as string;
 
   const { role, currentProject, setCurrentProject } = useAuth();
-  const { projects, loading: projectsLoading, getProjectRole } = useProjects();
+  const { projects, loading: projectsLoading } = useProjects();
   const { campaigns, saveCampaign, deleteCampaign } = useCampaigns(projectId);
-  const { channels, saveChannel, deleteChannel } = useChannels(projectId);
-  const { phases, savePhases } = useSettings(projectId);
+  const { channels } = useChannels(projectId);
+  const { phases } = useSettings(projectId);
   const { campaignTypes } = useCampaignTypes(projectId);
 
   // View state
@@ -36,8 +36,6 @@ export default function ProjectDashboardPage() {
 
   // Modal state
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign> | null>(null);
-  const [isManagingChannels, setIsManagingChannels] = useState(false);
-  const [isSettingPhases, setIsSettingPhases] = useState(false);
 
   // Hover state
   const [hoveredCampaign, setHoveredCampaign] = useState<Campaign | null>(null);
@@ -70,12 +68,6 @@ export default function ProjectDashboardPage() {
     setEditingCampaign(null);
   };
 
-  // Handle phase save
-  const handleSavePhases = async (newPhases: typeof phases) => {
-    await savePhases(newPhases);
-    setIsSettingPhases(false);
-  };
-
   // Show loading while checking project access
   if (projectsLoading || !currentProject) {
     return (
@@ -106,8 +98,6 @@ export default function ProjectDashboardPage() {
         zoomLevel={zoomLevel}
         onViewModeChange={setViewMode}
         onZoomLevelChange={setZoomLevel}
-        onOpenPhases={() => setIsSettingPhases(true)}
-        onOpenChannels={() => setIsManagingChannels(true)}
         onNewCampaign={() => setEditingCampaign({})}
       />
 
@@ -140,23 +130,6 @@ export default function ProjectDashboardPage() {
           onClose={() => setEditingCampaign(null)}
           onSave={handleSaveCampaign}
           onDelete={editingCampaign.id ? handleDeleteCampaign : undefined}
-        />
-      )}
-
-      {isManagingChannels && (
-        <ChannelModal
-          channels={channels}
-          onClose={() => setIsManagingChannels(false)}
-          onSave={saveChannel}
-          onDelete={deleteChannel}
-        />
-      )}
-
-      {isSettingPhases && (
-        <PhaseModal
-          phases={phases}
-          onClose={() => setIsSettingPhases(false)}
-          onSave={handleSavePhases}
         />
       )}
     </div>

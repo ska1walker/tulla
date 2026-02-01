@@ -6,7 +6,7 @@ import { Header } from '@/components/dashboard/header';
 import { Timeline } from '@/components/dashboard/timeline';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { CampaignTooltip } from '@/components/dashboard/campaign-tooltip';
-import { CampaignModal, ChannelModal, PhaseModal } from '@/components/modals';
+import { CampaignModal } from '@/components/modals';
 import { useAuth } from '@/contexts/auth-context';
 import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
@@ -19,8 +19,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const { role } = useAuth();
   const { campaigns, saveCampaign, deleteCampaign } = useCampaigns();
-  const { channels, saveChannel, deleteChannel } = useChannels();
-  const { phases, savePhases } = useSettings();
+  const { channels } = useChannels();
+  const { phases } = useSettings();
   const { campaignTypes } = useCampaignTypes();
 
   // View state
@@ -30,8 +30,6 @@ export default function DashboardPage() {
 
   // Modal state
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign> | null>(null);
-  const [isManagingChannels, setIsManagingChannels] = useState(false);
-  const [isSettingPhases, setIsSettingPhases] = useState(false);
 
   // Hover state
   const [hoveredCampaign, setHoveredCampaign] = useState<Campaign | null>(null);
@@ -56,12 +54,6 @@ export default function DashboardPage() {
     setEditingCampaign(null);
   };
 
-  // Handle phase save
-  const handleSavePhases = async (newPhases: typeof phases) => {
-    await savePhases(newPhases);
-    setIsSettingPhases(false);
-  };
-
   return (
     <div
       className="min-h-screen bg-stone-50 text-stone-900 font-sans text-sm selection:bg-rose-100"
@@ -83,8 +75,6 @@ export default function DashboardPage() {
         zoomLevel={zoomLevel}
         onViewModeChange={setViewMode}
         onZoomLevelChange={setZoomLevel}
-        onOpenPhases={() => setIsSettingPhases(true)}
-        onOpenChannels={() => setIsManagingChannels(true)}
         onNewCampaign={() => setEditingCampaign({})}
       />
 
@@ -117,23 +107,6 @@ export default function DashboardPage() {
           onClose={() => setEditingCampaign(null)}
           onSave={handleSaveCampaign}
           onDelete={editingCampaign.id ? handleDeleteCampaign : undefined}
-        />
-      )}
-
-      {isManagingChannels && (
-        <ChannelModal
-          channels={channels}
-          onClose={() => setIsManagingChannels(false)}
-          onSave={saveChannel}
-          onDelete={deleteChannel}
-        />
-      )}
-
-      {isSettingPhases && (
-        <PhaseModal
-          phases={phases}
-          onClose={() => setIsSettingPhases(false)}
-          onSave={handleSavePhases}
         />
       )}
     </div>
