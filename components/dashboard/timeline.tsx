@@ -10,9 +10,10 @@ import {
   isBefore,
   isAfter,
   setYear,
+  getDay,
 } from 'date-fns';
 import { Campaign, Channel, Phases, PhaseKey, CampaignType } from '@/types';
-import { ViewMode, ZoomLevel } from '@/lib/constants';
+import { ViewMode, ZoomLevel, ZOOM_LEVELS } from '@/lib/constants';
 import { toDate, fmtDate } from '@/lib/utils';
 
 interface TimelineProps {
@@ -121,21 +122,45 @@ export function Timeline({
         <div className="w-64 p-4 font-bold text-stone-400 text-[10px] border-r sticky left-0 bg-white/95 backdrop-blur z-20 flex items-center uppercase tracking-widest">
           Medienkanal
         </div>
-        <div className="flex-grow flex relative text-[9px] font-bold text-rose-500">
+        <div className="flex-grow flex relative text-[9px] font-bold">
           {timeline.totalDays > 0 &&
-            timeline.days.map((day, i) =>
-              day.getDate() === 1 ? (
-                <div
-                  key={i}
-                  className="absolute h-full border-l border-stone-200 flex items-center px-1.5"
-                  style={{ left: `${(i / timeline.totalDays) * 100}%` }}
-                >
-                  <span className="sticky left-64 bg-rose-50 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                    {fmtDate(day, 'MMM')}
-                  </span>
-                </div>
-              ) : null
-            )}
+            timeline.days.map((day, i) => {
+              const isFirstOfMonth = day.getDate() === 1;
+              const isMonday = getDay(day) === 1;
+              const left = (i / timeline.totalDays) * 100;
+
+              // Month labels (always show)
+              if (isFirstOfMonth) {
+                return (
+                  <div
+                    key={`month-${i}`}
+                    className="absolute h-full border-l border-stone-200 flex items-center px-1.5"
+                    style={{ left: `${left}%` }}
+                  >
+                    <span className="sticky left-64 bg-rose-50 px-1.5 py-0.5 rounded-md whitespace-nowrap text-rose-500">
+                      {fmtDate(day, 'MMM')}
+                    </span>
+                  </div>
+                );
+              }
+
+              // Week lines in header (only for zoomed views, skip if it's also first of month)
+              if (zoomLevel > ZOOM_LEVELS.YEAR && isMonday) {
+                return (
+                  <div
+                    key={`week-${i}`}
+                    className="absolute h-full border-l border-stone-200/40 flex items-end px-1"
+                    style={{ left: `${left}%` }}
+                  >
+                    <span className="text-[8px] text-stone-400 font-medium whitespace-nowrap mb-1">
+                      {fmtDate(day, 'd')}
+                    </span>
+                  </div>
+                );
+              }
+
+              return null;
+            })}
         </div>
       </div>
 
@@ -150,6 +175,24 @@ export function Timeline({
               {/* Phase backgrounds for year view */}
               {viewMode === 'year' &&
                 Object.entries(phases).map(([k, p]) => renderPhaseBackground(k, p))}
+
+              {/* Week lines for zoomed views (Q, M, W) */}
+              {zoomLevel > ZOOM_LEVELS.YEAR && timeline.totalDays > 0 && (
+                <div className="absolute inset-0 pointer-events-none">
+                  {timeline.days.map((day, i) => {
+                    // Show line on Mondays (getDay returns 1 for Monday)
+                    if (getDay(day) !== 1) return null;
+                    const left = (i / timeline.totalDays) * 100;
+                    return (
+                      <div
+                        key={i}
+                        className="absolute top-0 bottom-0 w-px bg-stone-200/60"
+                        style={{ left: `${left}%` }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Campaign bars */}
               {campaigns
