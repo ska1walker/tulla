@@ -69,38 +69,49 @@ export function Header({
               {mode.label}
             </button>
           ))}
-          <div className="w-px bg-stone-300 mx-1 my-1" />
-          <button
-            onClick={() => onZoomLevelChange(ZOOM_LEVELS.QUARTER)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold ${
-              zoomLevel === ZOOM_LEVELS.QUARTER
-                ? 'bg-white text-rose-500 shadow-sm'
-                : 'text-stone-400'
-            }`}
-          >
-            Q
-          </button>
-          <button
-            onClick={() => onZoomLevelChange(ZOOM_LEVELS.MONTH)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold ${
-              zoomLevel === ZOOM_LEVELS.MONTH
-                ? 'bg-white text-rose-500 shadow-sm'
-                : 'text-stone-400'
-            }`}
-          >
-            M
-          </button>
-          <button
-            onClick={() => onZoomLevelChange(ZOOM_LEVELS.WEEK)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold ${
-              zoomLevel === ZOOM_LEVELS.WEEK
-                ? 'bg-white text-rose-500 shadow-sm'
-                : 'text-stone-400'
-            }`}
-          >
-            W
-          </button>
         </div>
+
+        {/* Zoom Level Selector - only show for timeline views */}
+        {viewMode !== 'analytics' && (
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-medium text-stone-400 uppercase tracking-wide">Zoom</span>
+            <div className="flex bg-stone-100 p-1 rounded-lg">
+              <button
+                onClick={() => onZoomLevelChange(ZOOM_LEVELS.QUARTER)}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${
+                  zoomLevel === ZOOM_LEVELS.QUARTER
+                    ? 'bg-white text-rose-500 shadow-sm'
+                    : 'text-stone-400 hover:text-stone-600'
+                }`}
+                title="Quartalsansicht"
+              >
+                Q
+              </button>
+              <button
+                onClick={() => onZoomLevelChange(ZOOM_LEVELS.MONTH)}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${
+                  zoomLevel === ZOOM_LEVELS.MONTH
+                    ? 'bg-white text-rose-500 shadow-sm'
+                    : 'text-stone-400 hover:text-stone-600'
+                }`}
+                title="Monatsansicht"
+              >
+                M
+              </button>
+              <button
+                onClick={() => onZoomLevelChange(ZOOM_LEVELS.WEEK)}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${
+                  zoomLevel === ZOOM_LEVELS.WEEK
+                    ? 'bg-white text-rose-500 shadow-sm'
+                    : 'text-stone-400 hover:text-stone-600'
+                }`}
+                title="Wochenansicht"
+              >
+                W
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Analytics Toggle */}
         <button
