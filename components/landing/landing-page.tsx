@@ -1,113 +1,145 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, Layers, Calendar as CalendarIcon, Heart } from 'lucide-react';
+import { ArrowRight, Check, Sparkles, BarChart3, Users, Download, Calendar, Palette } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 
 export function LandingPage() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 overflow-x-hidden font-sans selection:bg-rose-100">
+    <div className="min-h-screen bg-[#FAFAF9] text-stone-900 overflow-x-hidden font-sans selection:bg-rose-100">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center bg-[#FAF9F6]/80 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-rose-200/50 transition-transform hover:scale-105">
-            <TulipLogo className="w-6 h-6" />
+      <nav className={`fixed top-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center transition-all duration-300 ${
+        scrollY > 50 ? 'bg-white/80 backdrop-blur-xl shadow-sm' : 'bg-transparent'
+      }`}>
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 bg-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-rose-200/50">
+            <TulipLogo className="w-5 h-5" />
           </div>
-          <span className="text-2xl tracking-tight">
-            <span className="font-black text-stone-900">mai</span>
+          <span className="text-xl tracking-tight">
+            <span className="font-black">mai</span>
             <span className="font-light text-rose-500 italic">flow</span>
           </span>
         </div>
-        <Link
-          href="/login"
-          className="px-6 py-2.5 bg-stone-900 text-white text-sm font-bold rounded-full hover:bg-black transition-all shadow-lg active:scale-95"
-        >
-          Anmelden
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="hidden sm:block px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
+          >
+            Login
+          </Link>
+          <Link
+            href="/login"
+            className="px-5 py-2.5 bg-stone-900 text-white text-sm font-bold rounded-full hover:bg-black transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+          >
+            Get Started
+          </Link>
+        </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-40 pb-20 px-8 max-w-6xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-rose-50 rounded-full mb-8 text-rose-600 font-bold text-xs uppercase tracking-widest animate-pulse">
-          <Sparkles className="w-4 h-4 text-rose-500" /> Planung neu gefühlt
-        </div>
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-8">
-          Marketing-Strategie <br />
-          <span className="text-rose-500 italic font-light">in voller Blüte.</span>
-        </h1>
-        <p className="text-xl text-stone-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-          maiflow bringt Emotion und Klarheit in deine Kampagnenplanung – intuitiv, ästhetisch und
-          mit dem Blick für das Wesentliche.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link
-            href="/login"
-            className="px-10 py-5 bg-rose-500 text-white rounded-2xl font-bold shadow-2xl shadow-rose-200 hover:bg-rose-600 transition-all flex items-center gap-3 group active:scale-95"
-          >
-            Erleben beginnen{' '}
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+      <section className="pt-32 pb-12 md:pt-40 md:pb-20 px-6 md:px-12 max-w-6xl mx-auto">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 border border-rose-100 rounded-full mb-8 text-rose-600 text-xs font-bold uppercase tracking-widest">
+            <Sparkles className="w-3.5 h-3.5" /> Campaign Planning, Redesigned
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6">
+            Your marketing year.
+            <br />
+            <span className="text-rose-500">Beautifully planned.</span>
+          </h1>
+
+          {/* Subheadline */}
+          <p className="text-lg md:text-xl text-stone-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            The visual campaign planner for teams who believe great marketing
+            deserves a great tool. Simple. Aesthetic. Powerful.
+          </p>
+
+          {/* CTA Group */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+            <Link
+              href="/login"
+              className="w-full sm:w-auto px-8 py-4 bg-rose-500 text-white rounded-2xl font-bold text-lg shadow-xl shadow-rose-200 hover:bg-rose-600 hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 group"
+            >
+              Start Planning Free
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <span className="text-sm text-stone-400">No credit card required</span>
+          </div>
         </div>
 
-        {/* Mockup Preview */}
-        <div className="mt-24 relative px-4">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-transparent to-transparent z-10" />
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-stone-100 p-4 transform rotate-1 hover:rotate-0 transition-transform duration-700 max-w-5xl mx-auto overflow-hidden">
-            <div className="bg-stone-50 rounded-[2.5rem] border border-stone-100 flex flex-col p-0 overflow-hidden">
-              <div className="h-14 border-b border-stone-200 flex items-center px-6 gap-6 bg-white">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-200" />
-                  <div className="w-3 h-3 rounded-full bg-teal-200" />
-                  <div className="w-3 h-3 rounded-full bg-stone-200" />
-                </div>
-                <div className="flex-grow flex justify-center gap-8">
-                  {['Januar', 'Februar', 'März', 'April'].map((m) => (
-                    <span
-                      key={m}
-                      className="text-[10px] font-black uppercase tracking-widest text-stone-300"
-                    >
-                      {m}
-                    </span>
-                  ))}
+        {/* Product Preview */}
+        <div className="mt-16 md:mt-24 relative">
+          {/* Glow Effect */}
+          <div className="absolute inset-0 bg-gradient-to-b from-rose-100/50 via-transparent to-transparent blur-3xl -z-10" />
+
+          {/* Browser Frame */}
+          <div className="bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-stone-200 overflow-hidden transform hover:scale-[1.01] transition-transform duration-700">
+            {/* Browser Bar */}
+            <div className="h-10 md:h-12 border-b border-stone-100 flex items-center px-4 gap-2 bg-stone-50">
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-rose-300" />
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-300" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-300" />
+              </div>
+              <div className="flex-1 flex justify-center">
+                <div className="px-4 py-1 bg-white rounded-lg text-[10px] text-stone-400 border border-stone-100">
+                  maiflow.app
                 </div>
               </div>
-              <div className="flex divide-x divide-stone-200/50">
-                <div className="w-48 p-4 space-y-6 bg-white/50 text-left">
-                  {['Social Ads', 'Newsletter', 'OOH Media', 'Influencer'].map((ch) => (
-                    <div
-                      key={ch}
-                      className="h-8 flex items-center font-bold text-stone-400 text-[11px] uppercase tracking-tight"
-                    >
-                      {ch}
-                    </div>
+            </div>
+
+            {/* App Preview */}
+            <div className="p-4 md:p-6 bg-stone-50">
+              {/* Timeline Header */}
+              <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
+                <div className="h-10 border-b border-stone-100 flex items-center px-4 gap-8 text-[10px] font-bold uppercase tracking-widest text-stone-300">
+                  <span className="w-24">Channel</span>
+                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((m) => (
+                    <span key={m} className="flex-1 text-center">{m}</span>
                   ))}
                 </div>
-                <div className="flex-grow p-4 relative min-h-[300px] bg-white">
-                  <div className="absolute inset-0 flex divide-x divide-stone-100">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <div key={i} className="flex-grow" />
-                    ))}
-                  </div>
-                  <div className="relative space-y-6 mt-1">
-                    <div className="flex items-center text-left">
-                      <div className="h-8 rounded-xl shadow-sm bg-[#A7F3D0] border-b-2 border-emerald-400/20 w-1/2 ml-4 animate-in slide-in-from-left duration-1000 flex items-center px-3 font-black text-[9px] text-emerald-800 uppercase tracking-widest">
-                        Brand Image 2026
+
+                {/* Timeline Rows */}
+                <div className="divide-y divide-stone-50">
+                  {[
+                    { channel: 'Social Media', campaigns: [{ start: 5, width: 35, color: '#A7F3D0', name: 'Brand Awareness' }] },
+                    { channel: 'Email', campaigns: [{ start: 20, width: 25, color: '#FECACA', name: 'Spring Sale' }, { start: 55, width: 20, color: '#FED7AA', name: 'Newsletter' }] },
+                    { channel: 'Display Ads', campaigns: [{ start: 35, width: 40, color: '#DDD6FE', name: 'Product Launch' }] },
+                    { channel: 'Influencer', campaigns: [{ start: 10, width: 20, color: '#99F6E4', name: 'Collab Q1' }] },
+                  ].map((row, i) => (
+                    <div key={i} className="flex h-12 items-center px-4 hover:bg-stone-50/50 transition-colors">
+                      <span className="w-24 text-xs font-semibold text-stone-600 truncate">{row.channel}</span>
+                      <div className="flex-1 relative h-7">
+                        {row.campaigns.map((c, j) => (
+                          <div
+                            key={j}
+                            className="absolute top-0 h-full rounded-lg shadow-sm flex items-center px-2 text-[9px] font-bold uppercase tracking-wide overflow-hidden animate-in slide-in-from-left duration-700"
+                            style={{
+                              left: `${c.start}%`,
+                              width: `${c.width}%`,
+                              backgroundColor: c.color,
+                              animationDelay: `${(i * 0.1) + (j * 0.1)}s`,
+                              color: c.color === '#A7F3D0' ? '#065f46' : c.color === '#FECACA' ? '#991b1b' : c.color === '#DDD6FE' ? '#5b21b6' : c.color === '#99F6E4' ? '#115e59' : '#9a3412'
+                            }}
+                          >
+                            <span className="truncate">{c.name}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div className="flex items-center text-left">
-                      <div className="h-8 rounded-xl shadow-sm bg-[#FECACA] border-b-2 border-rose-400/20 w-1/3 ml-24 animate-in slide-in-from-left duration-700 flex items-center px-3 font-black text-[9px] text-rose-800 uppercase tracking-widest">
-                        Spring Sale
-                      </div>
-                    </div>
-                    <div className="flex items-center text-left">
-                      <div className="h-8 rounded-xl shadow-sm bg-[#EDE9FE] border-b-2 border-violet-400/20 w-1/4 ml-40 animate-in slide-in-from-left duration-500 flex items-center px-3 font-black text-[9px] text-violet-800 uppercase tracking-widest">
-                        New Launch
-                      </div>
-                    </div>
-                    <div className="flex items-center text-left">
-                      <div className="h-8 rounded-xl shadow-sm bg-[#99F6E4] border-b-2 border-teal-400/20 w-1/2 ml-10 animate-in slide-in-from-left duration-1000 flex items-center px-3 font-black text-[9px] text-teal-800 uppercase tracking-widest">
-                        Awareness Boost
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -115,61 +147,175 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 bg-white px-8 text-center">
-        <h2 className="text-4xl font-black mb-16 tracking-tight">Für Visionärinnen gemacht.</h2>
-        <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-          {[
-            {
-              icon: <Layers className="text-teal-600 w-8 h-8" />,
-              title: 'Gesamtjahr',
-              desc: 'Der Panoramablick für deine strategischen Ziele und Meilensteine.',
-            },
-            {
-              icon: <CalendarIcon className="text-rose-500 w-8 h-8" />,
-              title: 'Monats-Fokus',
-              desc: 'Deine operative Basis für die perfekte Steuerung.',
-            },
-            {
-              icon: <Heart className="text-rose-400 w-8 h-8" />,
-              title: 'Liebevolles Design',
-              desc: 'Planung, die sich endlich nach Inspiration anfühlt.',
-            },
-          ].map((f, i) => (
-            <div key={i} className="flex flex-col items-center group">
-              <div className="w-16 h-16 rounded-2xl bg-stone-50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                {f.icon}
+      {/* Social Proof */}
+      <section className="py-12 md:py-16 border-y border-stone-100 bg-white">
+        <div className="max-w-5xl mx-auto px-6 md:px-12">
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-stone-400 mb-8">
+            Trusted by marketing teams who care about design
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50">
+            {['Studio', 'Agency', 'Brand', 'Creative', 'Digital'].map((name) => (
+              <div key={name} className="text-lg md:text-xl font-black text-stone-300 tracking-tight">
+                {name}
+                <span className="text-rose-300">.</span>
               </div>
-              <h3 className="text-xl font-bold mb-2 text-stone-800">{f.title}</h3>
-              <p className="text-stone-400 text-sm leading-relaxed max-w-[240px]">{f.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Problem → Solution */}
+      <section className="py-20 md:py-32 px-6 md:px-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
+              Spreadsheets are so 2010.
+            </h2>
+            <p className="text-lg text-stone-500 max-w-2xl mx-auto">
+              Your campaigns deserve better than endless Excel tabs and confusing Gantt charts.
+              maiflow gives you the clarity you need—beautifully.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            {[
+              {
+                icon: <Calendar className="w-6 h-6" />,
+                title: 'See the big picture',
+                desc: 'Your entire year on one stunning timeline. Zoom from quarters to weeks in a click.',
+              },
+              {
+                icon: <BarChart3 className="w-6 h-6" />,
+                title: 'Track what matters',
+                desc: 'Budget vs. actual spending, instantly visible. Know where you stand at any moment.',
+              },
+              {
+                icon: <Users className="w-6 h-6" />,
+                title: 'Collaborate seamlessly',
+                desc: 'Invite your team, assign roles, work together. Everyone stays in sync.',
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="p-6 md:p-8 bg-white rounded-2xl border border-stone-100 hover:border-rose-200 hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 mb-5 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                  {item.icon}
+                </div>
+                <h3 className="text-lg font-bold mb-2">{item.title}</h3>
+                <p className="text-stone-500 text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Deep Dive */}
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-stone-900 text-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
+              Everything you need.
+              <br />
+              <span className="text-rose-400">Nothing you don't.</span>
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {[
+              { icon: <Palette />, text: 'Custom campaign types & colors' },
+              { icon: <Calendar />, text: '3 strategic phases per year' },
+              { icon: <BarChart3 />, text: 'Budget tracking with trends' },
+              { icon: <Users />, text: 'Team roles & permissions' },
+              { icon: <Download />, text: 'Export to PNG for presentations' },
+              { icon: <Sparkles />, text: 'Beautiful, minimal design' },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+              >
+                <div className="w-10 h-10 bg-rose-500/20 rounded-lg flex items-center justify-center text-rose-400">
+                  {item.icon}
+                </div>
+                <span className="font-medium">{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial */}
+      <section className="py-20 md:py-32 px-6 md:px-12">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="text-5xl mb-8">💐</div>
+          <blockquote className="text-2xl md:text-3xl font-light text-stone-700 leading-relaxed mb-8 italic">
+            "Finally, a planning tool that doesn't make me want to close my laptop.
+            maiflow is exactly what our team needed."
+          </blockquote>
+          <div>
+            <div className="font-bold text-stone-900">Marketing Lead</div>
+            <div className="text-sm text-stone-400">Creative Agency</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-rose-50 to-white">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-6">
+            Ready to plan better?
+          </h2>
+          <p className="text-lg text-stone-500 mb-10">
+            Join teams who've already made the switch to beautiful campaign planning.
+          </p>
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-2 px-10 py-5 bg-rose-500 text-white rounded-2xl font-bold text-lg shadow-xl shadow-rose-200 hover:bg-rose-600 hover:shadow-2xl hover:scale-105 transition-all group"
+          >
+            Start Free Today
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <div className="mt-6 flex flex-wrap justify-center gap-6 text-sm text-stone-400">
+            {['Free to start', 'No credit card', 'Setup in 2 minutes'].map((item) => (
+              <div key={item} className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-500" />
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-20 bg-stone-900 text-white text-center px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <TulipLogo className="w-10 h-10 text-rose-500" />
-            <span className="text-3xl tracking-tight">
-              <span className="font-black text-white">mai</span>
-              <span className="font-light text-rose-500 italic">flow</span>
-            </span>
+      <footer className="py-12 bg-stone-900 text-white px-6 md:px-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-2">
+              <TulipLogo className="w-8 h-8 text-rose-500" />
+              <span className="text-xl tracking-tight">
+                <span className="font-black">mai</span>
+                <span className="font-light text-rose-500 italic">flow</span>
+              </span>
+            </div>
+
+            <div className="flex items-center gap-6 text-sm text-stone-400">
+              <Link href="/login" className="hover:text-white transition-colors">Login</Link>
+              <Link href="/credits" className="hover:text-white transition-colors flex items-center gap-1">
+                <span>Credits</span>
+                <span className="text-base">🎮</span>
+              </Link>
+            </div>
           </div>
-          <p className="text-2xl font-light text-stone-400 leading-relaxed mb-12 italic">
-            &ldquo;Wir glauben, dass großartiges Marketing Ruhe braucht. maiflow wurde entwickelt, um
-            Platz für kreative Strategien zu schaffen.&rdquo;
-          </p>
-          <Link
-            href="/credits"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-stone-800 hover:bg-rose-500 text-stone-400 hover:text-white rounded-lg transition-all duration-300 group mb-6"
-          >
-            <span className="font-mono text-xs tracking-wider">INSERT COIN</span>
-            <span className="text-lg group-hover:animate-pulse">🎮</span>
-          </Link>
-          <div className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.3em]">
-            &copy; 2026 Kai Böhm
+
+          <div className="mt-8 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-500">
+            <div>&copy; 2026 maiflow. Made with love in Germany.</div>
+            <Link
+              href="/credits"
+              className="px-3 py-1.5 bg-stone-800 hover:bg-rose-500 rounded-lg transition-all duration-300 flex items-center gap-2 group"
+            >
+              <span className="font-mono text-[10px] tracking-wider text-stone-400 group-hover:text-white">INSERT COIN</span>
+              <span>🎮</span>
+            </Link>
           </div>
         </div>
       </footer>
