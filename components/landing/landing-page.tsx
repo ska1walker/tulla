@@ -34,13 +34,13 @@ export function LandingPage() {
             href="/login"
             className="hidden sm:block px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
           >
-            Login
+            Anmelden
           </Link>
           <Link
             href="/login"
             className="px-5 py-2.5 bg-stone-900 text-white text-sm font-bold rounded-full hover:bg-black transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
           >
-            Get Started
+            Loslegen
           </Link>
         </div>
       </nav>
@@ -50,20 +50,20 @@ export function LandingPage() {
         <div className="text-center max-w-4xl mx-auto">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 border border-rose-100 rounded-full mb-8 text-rose-600 text-xs font-bold uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5" /> Campaign Planning, Redesigned
+            <Sparkles className="w-3.5 h-3.5" /> Kampagnenplanung neu gedacht
           </div>
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6">
-            Your marketing year.
+            Dein Marketing-Jahr.
             <br />
-            <span className="text-rose-500">Beautifully planned.</span>
+            <span className="text-rose-500">Wunderschön geplant.</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-stone-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            The visual campaign planner for teams who believe great marketing
-            deserves a great tool. Simple. Aesthetic. Powerful.
+            Der visuelle Kampagnenplaner für Teams, die wissen:
+            Gutes Marketing verdient ein gutes Tool. Einfach. Ästhetisch. Durchdacht.
           </p>
 
           {/* CTA Group */}
@@ -72,10 +72,10 @@ export function LandingPage() {
               href="/login"
               className="w-full sm:w-auto px-8 py-4 bg-rose-500 text-white rounded-2xl font-bold text-lg shadow-xl shadow-rose-200 hover:bg-rose-600 hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 group"
             >
-              Start Planning Free
+              Kostenlos starten
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <span className="text-sm text-stone-400">No credit card required</span>
+            <span className="text-sm text-stone-400">Keine Kreditkarte nötig</span>
           </div>
         </div>
 
@@ -105,8 +105,8 @@ export function LandingPage() {
               {/* Timeline Header */}
               <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
                 <div className="h-10 border-b border-stone-100 flex items-center px-4 gap-8 text-[10px] font-bold uppercase tracking-widest text-stone-300">
-                  <span className="w-24">Channel</span>
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((m) => (
+                  <span className="w-24">Kanal</span>
+                  {['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun'].map((m) => (
                     <span key={m} className="flex-1 text-center">{m}</span>
                   ))}
                 </div>
@@ -114,10 +114,10 @@ export function LandingPage() {
                 {/* Timeline Rows */}
                 <div className="divide-y divide-stone-50">
                   {[
-                    { channel: 'Social Media', campaigns: [{ start: 5, width: 35, color: '#A7F3D0', name: 'Brand Awareness' }] },
-                    { channel: 'Email', campaigns: [{ start: 20, width: 25, color: '#FECACA', name: 'Spring Sale' }, { start: 55, width: 20, color: '#FED7AA', name: 'Newsletter' }] },
-                    { channel: 'Display Ads', campaigns: [{ start: 35, width: 40, color: '#DDD6FE', name: 'Product Launch' }] },
-                    { channel: 'Influencer', campaigns: [{ start: 10, width: 20, color: '#99F6E4', name: 'Collab Q1' }] },
+                    { channel: 'Social Media', campaigns: [{ start: 5, width: 35, color: '#A7F3D0', name: 'Markenaufbau' }] },
+                    { channel: 'Newsletter', campaigns: [{ start: 20, width: 25, color: '#FECACA', name: 'Frühlingsaktion' }, { start: 55, width: 20, color: '#FED7AA', name: 'Update' }] },
+                    { channel: 'Display Ads', campaigns: [{ start: 35, width: 40, color: '#DDD6FE', name: 'Produktlaunch' }] },
+                    { channel: 'Influencer', campaigns: [{ start: 10, width: 20, color: '#99F6E4', name: 'Kooperation Q1' }] },
                   ].map((row, i) => (
                     <div key={i} className="flex h-12 items-center px-4 hover:bg-stone-50/50 transition-colors">
                       <span className="w-24 text-xs font-semibold text-stone-600 truncate">{row.channel}</span>
@@ -151,10 +151,10 @@ export function LandingPage() {
       <section className="py-12 md:py-16 border-y border-stone-100 bg-white">
         <div className="max-w-5xl mx-auto px-6 md:px-12">
           <p className="text-center text-xs font-bold uppercase tracking-widest text-stone-400 mb-8">
-            Trusted by marketing teams who care about design
+            Für Marketing-Teams, denen Design nicht egal ist
           </p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50">
-            {['Studio', 'Agency', 'Brand', 'Creative', 'Digital'].map((name) => (
+            {['Studio', 'Agentur', 'Brand', 'Kreativ', 'Digital'].map((name) => (
               <div key={name} className="text-lg md:text-xl font-black text-stone-300 tracking-tight">
                 {name}
                 <span className="text-rose-300">.</span>
@@ -169,11 +169,11 @@ export function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
-              Spreadsheets are so 2010.
+              Excel war gestern.
             </h2>
             <p className="text-lg text-stone-500 max-w-2xl mx-auto">
-              Your campaigns deserve better than endless Excel tabs and confusing Gantt charts.
-              maiflow gives you the clarity you need—beautifully.
+              Deine Kampagnen verdienen mehr als endlose Tabellenblätter und unübersichtliche Gantt-Charts.
+              maiflow bringt Klarheit – und sieht dabei auch noch gut aus.
             </p>
           </div>
 
@@ -181,18 +181,18 @@ export function LandingPage() {
             {[
               {
                 icon: <Calendar className="w-6 h-6" />,
-                title: 'See the big picture',
-                desc: 'Your entire year on one stunning timeline. Zoom from quarters to weeks in a click.',
+                title: 'Das große Ganze sehen',
+                desc: 'Dein gesamtes Jahr auf einer Timeline. Zoom von Quartalen bis Wochen – mit einem Klick.',
               },
               {
                 icon: <BarChart3 className="w-6 h-6" />,
-                title: 'Track what matters',
-                desc: 'Budget vs. actual spending, instantly visible. Know where you stand at any moment.',
+                title: 'Budgets im Blick',
+                desc: 'Plan vs. Ist-Ausgaben, sofort sichtbar. Du weißt immer, wo du stehst.',
               },
               {
                 icon: <Users className="w-6 h-6" />,
-                title: 'Collaborate seamlessly',
-                desc: 'Invite your team, assign roles, work together. Everyone stays in sync.',
+                title: 'Gemeinsam planen',
+                desc: 'Lade dein Team ein, vergib Rollen, arbeitet zusammen. Alle sind auf dem gleichen Stand.',
               },
             ].map((item, i) => (
               <div
@@ -215,20 +215,20 @@ export function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
-              Everything you need.
+              Alles, was du brauchst.
               <br />
-              <span className="text-rose-400">Nothing you don't.</span>
+              <span className="text-rose-400">Nichts, was du nicht brauchst.</span>
             </h2>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             {[
-              { icon: <Palette />, text: 'Custom campaign types & colors' },
-              { icon: <Calendar />, text: '3 strategic phases per year' },
-              { icon: <BarChart3 />, text: 'Budget tracking with trends' },
-              { icon: <Users />, text: 'Team roles & permissions' },
-              { icon: <Download />, text: 'Export to PNG for presentations' },
-              { icon: <Sparkles />, text: 'Beautiful, minimal design' },
+              { icon: <Palette />, text: 'Eigene Kampagnentypen & Farben' },
+              { icon: <Calendar />, text: '3 strategische Phasen pro Jahr' },
+              { icon: <BarChart3 />, text: 'Budget-Tracking mit Trends' },
+              { icon: <Users />, text: 'Team-Rollen & Berechtigungen' },
+              { icon: <Download />, text: 'Export als PNG für Präsentationen' },
+              { icon: <Sparkles />, text: 'Schönes, minimales Design' },
             ].map((item, i) => (
               <div
                 key={i}
@@ -249,12 +249,12 @@ export function LandingPage() {
         <div className="max-w-3xl mx-auto text-center">
           <div className="text-5xl mb-8">💐</div>
           <blockquote className="text-2xl md:text-3xl font-light text-stone-700 leading-relaxed mb-8 italic">
-            "Finally, a planning tool that doesn't make me want to close my laptop.
-            maiflow is exactly what our team needed."
+            &ldquo;Endlich ein Planungstool, bei dem ich nicht sofort den Laptop zuklappen will.
+            maiflow ist genau das, was unser Team gebraucht hat.&rdquo;
           </blockquote>
           <div>
-            <div className="font-bold text-stone-900">Marketing Lead</div>
-            <div className="text-sm text-stone-400">Creative Agency</div>
+            <div className="font-bold text-stone-900">Marketing-Leitung</div>
+            <div className="text-sm text-stone-400">Kreativagentur</div>
           </div>
         </div>
       </section>
@@ -263,20 +263,20 @@ export function LandingPage() {
       <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-rose-50 to-white">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-6">
-            Ready to plan better?
+            Bereit für bessere Planung?
           </h2>
           <p className="text-lg text-stone-500 mb-10">
-            Join teams who've already made the switch to beautiful campaign planning.
+            Schließ dich Teams an, die schon auf schöne Kampagnenplanung umgestiegen sind.
           </p>
           <Link
             href="/login"
             className="inline-flex items-center gap-2 px-10 py-5 bg-rose-500 text-white rounded-2xl font-bold text-lg shadow-xl shadow-rose-200 hover:bg-rose-600 hover:shadow-2xl hover:scale-105 transition-all group"
           >
-            Start Free Today
+            Jetzt kostenlos starten
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <div className="mt-6 flex flex-wrap justify-center gap-6 text-sm text-stone-400">
-            {['Free to start', 'No credit card', 'Setup in 2 minutes'].map((item) => (
+            {['Kostenlos starten', 'Keine Kreditkarte', 'In 2 Minuten startklar'].map((item) => (
               <div key={item} className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-500" />
                 {item}
@@ -299,7 +299,7 @@ export function LandingPage() {
             </div>
 
             <div className="flex items-center gap-6 text-sm text-stone-400">
-              <Link href="/login" className="hover:text-white transition-colors">Login</Link>
+              <Link href="/login" className="hover:text-white transition-colors">Anmelden</Link>
               <Link href="/credits" className="hover:text-white transition-colors flex items-center gap-1">
                 <span>Credits</span>
                 <span className="text-base">🎮</span>
@@ -308,7 +308,7 @@ export function LandingPage() {
           </div>
 
           <div className="mt-8 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-500">
-            <div>&copy; 2026 maiflow. Made with love in Germany.</div>
+            <div>&copy; 2026 maiflow. Mit Liebe gemacht in Deutschland.</div>
             <Link
               href="/credits"
               className="px-3 py-1.5 bg-stone-800 hover:bg-rose-500 rounded-lg transition-all duration-300 flex items-center gap-2 group"
