@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'TULLA - Liebevolle Kampagnensteuerung',
+  title: 'maiflo - Liebevolle Kampagnensteuerung',
   description: 'Marketing-Kampagnenplanung mit Emotion und Klarheit',
 };
 

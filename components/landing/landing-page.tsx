@@ -11,7 +11,7 @@ export function LandingPage() {
           <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-rose-200/50 transition-transform hover:scale-105">
             <TulipLogo className="w-6 h-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight">TULLA</span>
+          <span className="text-xl font-bold tracking-tight">maiflo</span>
         </div>
         <Link
           href="/login"
@@ -31,7 +31,7 @@ export function LandingPage() {
           <span className="text-rose-500 italic font-light">in voller Blüte.</span>
         </h1>
         <p className="text-xl text-stone-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-          TULLA bringt Emotion und Klarheit in deine Kampagnenplanung – intuitiv, ästhetisch und
+          maiflo bringt Emotion und Klarheit in deine Kampagnenplanung – intuitiv, ästhetisch und
           mit dem Blick für das Wesentliche.
         </p>
         <div className="flex justify-center gap-4">
@@ -149,7 +149,7 @@ export function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <TulipLogo className="w-12 h-12 mx-auto mb-8 text-rose-500" />
           <p className="text-2xl font-light text-stone-400 leading-relaxed mb-12 italic">
-            &ldquo;Wir glauben, dass großartiges Marketing Ruhe braucht. TULLA wurde entwickelt, um
+            &ldquo;Wir glauben, dass großartiges Marketing Ruhe braucht. maiflo wurde entwickelt, um
             Platz für kreative Strategien zu schaffen.&rdquo;
           </p>
           <div className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.3em]">

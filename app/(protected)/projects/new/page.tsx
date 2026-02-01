@@ -49,7 +49,7 @@ export default function NewProjectPage() {
           <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center shadow-lg">
             <TulipLogo className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-lg font-bold tracking-tight">TULLA</h1>
+          <h1 className="text-lg font-bold tracking-tight">maiflo</h1>
         </div>
         <UserMenu />
       </header>
