@@ -7,14 +7,14 @@ import { Header } from '@/components/dashboard/header';
 import { Timeline } from '@/components/dashboard/timeline';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { CampaignTooltip } from '@/components/dashboard/campaign-tooltip';
-import { CampaignModal } from '@/components/modals';
+import { CampaignModal, ExportModal } from '@/components/modals';
 import { useAuth } from '@/contexts/auth-context';
 import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
 import { useSettings } from '@/hooks/use-settings';
 import { useCampaignTypes } from '@/hooks/use-campaign-types';
 import { useProjects } from '@/hooks/use-projects';
-import { Campaign } from '@/types';
+import { Campaign, ExportSettings, Branding } from '@/types';
 import { ZOOM_LEVELS, ViewMode, ZoomLevel } from '@/lib/constants';
 
 export default function ProjectDashboardPage() {
@@ -26,7 +26,7 @@ export default function ProjectDashboardPage() {
   const { projects, loading: projectsLoading } = useProjects();
   const { campaigns, saveCampaign, deleteCampaign } = useCampaigns(projectId);
   const { channels } = useChannels(projectId);
-  const { phases } = useSettings(projectId);
+  const { phases, branding, saveBranding } = useSettings(projectId);
   const { campaignTypes } = useCampaignTypes(projectId);
 
   // View state
@@ -36,6 +36,7 @@ export default function ProjectDashboardPage() {
 
   // Modal state
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign> | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // Hover state
   const [hoveredCampaign, setHoveredCampaign] = useState<Campaign | null>(null);
@@ -66,6 +67,15 @@ export default function ProjectDashboardPage() {
   const handleDeleteCampaign = async (id: string) => {
     await deleteCampaign(id);
     setEditingCampaign(null);
+  };
+
+  // Handle export settings save
+  const handleSaveExportSettings = (settings: ExportSettings) => {
+    saveBranding({
+      ...branding,
+      exportPrimaryColor: settings.primaryColor,
+      exportAccentColor: settings.accentColor,
+    });
   };
 
   // Show loading while checking project access
@@ -99,6 +109,7 @@ export default function ProjectDashboardPage() {
         onViewModeChange={setViewMode}
         onZoomLevelChange={setZoomLevel}
         onNewCampaign={() => setEditingCampaign({})}
+        onExport={() => setShowExportModal(true)}
       />
 
       {/* Main Content */}
@@ -136,6 +147,22 @@ export default function ProjectDashboardPage() {
           onClose={() => setEditingCampaign(null)}
           onSave={handleSaveCampaign}
           onDelete={editingCampaign.id ? handleDeleteCampaign : undefined}
+        />
+      )}
+
+      {showExportModal && (
+        <ExportModal
+          onClose={() => setShowExportModal(false)}
+          campaigns={campaigns}
+          channels={channels}
+          phases={phases}
+          campaignTypes={campaignTypes}
+          currentYear={currentYear}
+          initialSettings={{
+            primaryColor: branding.exportPrimaryColor || '#3B82F6',
+            accentColor: branding.exportAccentColor || '#F43F5E',
+          }}
+          onSaveSettings={handleSaveExportSettings}
         />
       )}
     </div>

@@ -48,6 +48,8 @@ export const DEFAULT_PHASES: Phases = {
 export const DEFAULT_BRANDING: Branding = {
   imageColor: '#A7F3D0',
   salesColor: '#FECACA',
+  exportPrimaryColor: '#3B82F6',
+  exportAccentColor: '#F43F5E',
 };
 
 // LocalStorage Keys

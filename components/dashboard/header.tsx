@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Settings, LayoutDashboard, RotateCcw } from 'lucide-react';
+import { Plus, Settings, LayoutDashboard, RotateCcw, Download } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { ProjectSwitcher } from '@/components/ui/project-switcher';
 import { UserMenu } from '@/components/ui/user-menu';
@@ -16,6 +16,7 @@ interface HeaderProps {
   onViewModeChange: (mode: ViewMode) => void;
   onZoomLevelChange: (level: ZoomLevel) => void;
   onNewCampaign: () => void;
+  onExport?: () => void;
 }
 
 export function Header({
@@ -25,6 +26,7 @@ export function Header({
   onViewModeChange,
   onZoomLevelChange,
   onNewCampaign,
+  onExport,
 }: HeaderProps) {
   const { role, currentProject } = useAuth();
 
@@ -133,6 +135,16 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2">
+        {onExport && (
+          <button
+            onClick={onExport}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-xl text-stone-600 hover:text-rose-500 transition-colors"
+            title="Als PNG exportieren"
+          >
+            <Download className="w-4 h-4" />
+            <span className="text-xs font-medium">Export</span>
+          </button>
+        )}
         {role === 'admin' && (
           <>
             {currentProject && (
