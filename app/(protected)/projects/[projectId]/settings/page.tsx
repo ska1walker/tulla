@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, Trash2, Users, Settings, Save, Palette, Layers, Clo
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { UserMenu } from '@/components/ui/user-menu';
 import { MemberList } from '@/components/projects/member-list';
+import { InvitationList } from '@/components/projects/invitation-list';
 import { InviteForm } from '@/components/projects/invite-form';
 import { CampaignTypeManager } from '@/components/projects/campaign-type-manager';
 import { ChannelManager } from '@/components/projects/channel-manager';
@@ -31,7 +32,7 @@ export default function ProjectSettingsPage() {
   const { currentProject, setCurrentProject } = useAuth();
   const { projects, loading: projectsLoading, updateProject, deleteProject } = useProjects();
   const { members, loading: membersLoading, updateMemberRole, removeMember } = useProjectMembers(projectId);
-  const { createInvitation } = useInvitations(projectId);
+  const { invitations, loading: invitationsLoading, createInvitation, cancelInvitation, resendInvitation } = useInvitations(projectId);
   const { canEditProject, canDeleteProject, canInviteMembers } = usePermissions(projectId);
   const { campaignTypes, addCampaignType, updateCampaignType, deleteCampaignType } = useCampaignTypes(projectId);
   const { channels, saveChannel, deleteChannel } = useChannels(projectId);
@@ -110,12 +111,13 @@ export default function ProjectSettingsPage() {
     );
   }
 
+  const pendingInvitations = invitations.filter((inv) => inv.status === 'pending');
   const tabs: { key: TabKey; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: 'general', label: 'Allgemein', icon: <Settings className="w-4 h-4" /> },
     { key: 'channels', label: 'Kanäle', icon: <Layers className="w-4 h-4" />, count: channels.length },
     { key: 'phases', label: 'Phasen', icon: <Clock className="w-4 h-4" /> },
     { key: 'types', label: 'Typen', icon: <Palette className="w-4 h-4" />, count: campaignTypes.length },
-    { key: 'members', label: 'Team', icon: <Users className="w-4 h-4" />, count: members.length },
+    { key: 'members', label: 'Team', icon: <Users className="w-4 h-4" />, count: members.length + pendingInvitations.length },
   ];
 
   return (
@@ -328,7 +330,7 @@ export default function ProjectSettingsPage() {
 
             {/* Members Tab */}
             {activeTab === 'members' && (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <div>
                   <h2 className="text-xl font-bold text-stone-900 mb-1">Teammitglieder</h2>
                   <p className="text-stone-500">
@@ -343,8 +345,22 @@ export default function ProjectSettingsPage() {
                   </div>
                 )}
 
+                {/* Pending Invitations */}
+                {invitations.length > 0 && (
+                  <div>
+                    <h3 className="font-medium text-stone-900 mb-3">Einladungen</h3>
+                    <InvitationList
+                      invitations={invitations}
+                      loading={invitationsLoading}
+                      onCancel={cancelInvitation}
+                      onResend={resendInvitation}
+                    />
+                  </div>
+                )}
+
+                {/* Current Members */}
                 <div>
-                  <h3 className="font-medium text-stone-900 mb-3">Aktuelle Mitglieder</h3>
+                  <h3 className="font-medium text-stone-900 mb-3">Aktive Mitglieder</h3>
                   <MemberList
                     members={members}
                     loading={membersLoading}

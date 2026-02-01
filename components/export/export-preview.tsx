@@ -143,7 +143,7 @@ function TimelinePreview({
 
   const getTypeColor = (typeId: string): string => {
     const type = campaignTypes.find((t) => t.id === typeId);
-    return type?.color || '#E5E7EB';
+    return type?.color || '#FECDD3';
   };
 
   const getPosStyle = (startDate: string | Date, endDate: string | Date) => {

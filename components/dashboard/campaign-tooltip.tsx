@@ -11,7 +11,7 @@ interface CampaignTooltipProps {
 
 export function CampaignTooltip({ campaign, campaignTypes, mousePos }: CampaignTooltipProps) {
   const type = campaignTypes.find((t) => t.id === campaign.typeId);
-  const color = type?.color || '#E5E7EB';
+  const color = type?.color || '#FECDD3';
 
   return (
     <div

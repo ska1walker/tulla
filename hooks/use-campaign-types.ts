@@ -110,7 +110,7 @@ export function useCampaignTypes(projectId?: string) {
   const getTypeColor = useCallback(
     (typeId: string): string => {
       const type = campaignTypes.find((t) => t.id === typeId);
-      return type?.color || '#E5E7EB';
+      return type?.color || '#FECDD3';
     },
     [campaignTypes]
   );

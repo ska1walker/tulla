@@ -15,7 +15,7 @@ export const CAMPAIGN_TYPE_COLORS = [
   '#DBEAFE', // Sky blue
   '#FED7AA', // Peach
   '#D9F99D', // Lime
-  '#E5E7EB', // Neutral gray
+  '#FECDD3', // Rose (default)
 ] as const;
 
 // Default campaign types (used when no types exist)
