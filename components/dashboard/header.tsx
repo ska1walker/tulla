@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Settings, LayoutDashboard } from 'lucide-react';
+import { Plus, Settings, LayoutDashboard, RotateCcw } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { ProjectSwitcher } from '@/components/ui/project-switcher';
 import { UserMenu } from '@/components/ui/user-menu';
@@ -106,6 +106,15 @@ export function Header({
               >
                 W
               </button>
+              {zoomLevel !== ZOOM_LEVELS.YEAR && (
+                <button
+                  onClick={() => onZoomLevelChange(ZOOM_LEVELS.YEAR)}
+                  className="ml-1 px-2 py-1.5 rounded-md text-[10px] font-bold text-stone-400 hover:text-rose-500 hover:bg-white transition-all"
+                  title="Zoom zurücksetzen"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                </button>
+              )}
             </div>
           </div>
         )}

@@ -54,20 +54,33 @@ export function useCampaigns(projectId?: string) {
   // Save campaign
   const saveCampaign = useCallback(
     async (data: CampaignFormData) => {
-      // Ensure budget fields are numbers
-      const processedData = {
-        ...data,
-        budgetPlanned: data.budgetPlanned ? Number(data.budgetPlanned) : undefined,
-        budgetActual: data.budgetActual ? Number(data.budgetActual) : undefined,
+      // Extract id and prepare data for Firestore (id should not be in the document)
+      const { id, ...restData } = data;
+
+      // Ensure budget fields are numbers and clean undefined values
+      const processedData: Record<string, unknown> = {
+        name: restData.name,
+        channelId: restData.channelId,
+        typeId: restData.typeId,
+        startDate: restData.startDate,
+        endDate: restData.endDate,
       };
+
+      // Only add budget fields if they have values
+      if (restData.budgetPlanned) {
+        processedData.budgetPlanned = Number(restData.budgetPlanned);
+      }
+      if (restData.budgetActual) {
+        processedData.budgetActual = Number(restData.budgetActual);
+      }
 
       if (isOffline) {
         const items = JSON.parse(localStorage.getItem(STORAGE_KEYS.CAMPAIGNS) || '[]');
 
-        if (data.id) {
+        if (id) {
           // Update existing
           const updated = items.map((item: Campaign) =>
-            item.id === data.id ? { ...item, ...processedData } : item
+            item.id === id ? { ...item, ...processedData, id } : item
           );
           localStorage.setItem(STORAGE_KEYS.CAMPAIGNS, JSON.stringify(updated));
           setCampaigns(updated);
@@ -88,8 +101,8 @@ export function useCampaigns(projectId?: string) {
 
       const ref = collection(db, 'projects', activeProjectId, 'campaigns');
 
-      if (data.id) {
-        await updateDoc(doc(ref, data.id), processedData);
+      if (id) {
+        await updateDoc(doc(ref, id), processedData);
       } else {
         await addDoc(ref, processedData);
       }
