@@ -30,7 +30,10 @@ export function LandingPage() {
             <span className="font-light text-rose-500 italic">flow</span>
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <ShareButton variant="compact" />
+          </div>
           <Link
             href="/login"
             className="hidden sm:block px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
