@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Plus, Settings, LayoutDashboard, RotateCcw, Download } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
+import { ShareButton } from '@/components/ui/share-button';
 import { ProjectSwitcher } from '@/components/ui/project-switcher';
 import { UserMenu } from '@/components/ui/user-menu';
 import { useAuth } from '@/contexts/auth-context';
@@ -172,8 +173,11 @@ export function Header({
           </>
         )}
 
+        {/* Share Button */}
+        <ShareButton variant="compact" />
+
         {/* User Menu */}
-        <div className="ml-4">
+        <div className="ml-2">
           <UserMenu />
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Sparkles, BarChart3, Users, Download, Calendar, Palette, Shield, Lock, Heart } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
+import { ShareButton } from '@/components/ui/share-button';
 
 export function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
@@ -350,6 +351,13 @@ export function LandingPage() {
           <p className="text-sm text-stone-500 italic">
             Wir glauben: Gute Tools sollten für alle zugänglich sein.
           </p>
+        </div>
+      </section>
+
+      {/* Share Section */}
+      <section className="py-12 px-6 md:px-12">
+        <div className="max-w-md mx-auto">
+          <ShareButton />
         </div>
       </section>
 
