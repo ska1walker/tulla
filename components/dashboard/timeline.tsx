@@ -120,7 +120,7 @@ export function Timeline({
       {/* Header with month labels */}
       <div className="flex border-b border-stone-100 bg-stone-50/30 h-12 text-center">
         <div className="w-64 p-4 font-bold text-stone-400 text-[10px] border-r sticky left-0 bg-white/95 backdrop-blur z-20 flex items-center uppercase tracking-widest">
-          Medienkanal
+          Kanal
         </div>
         <div className="flex-grow flex relative text-[9px] font-bold">
           {timeline.totalDays > 0 &&

@@ -13,6 +13,7 @@ import { CampaignTypeManager } from '@/components/projects/campaign-type-manager
 import { ChannelManager } from '@/components/projects/channel-manager';
 import { PhaseManager } from '@/components/projects/phase-manager';
 import { useAuth } from '@/contexts/auth-context';
+import { useToast } from '@/contexts/toast-context';
 import { useProjects } from '@/hooks/use-projects';
 import { useProjectMembers } from '@/hooks/use-project-members';
 import { useInvitations } from '@/hooks/use-invitations';
@@ -31,6 +32,7 @@ export default function ProjectSettingsPage() {
   const projectId = params.projectId as string;
 
   const { currentProject, setCurrentProject } = useAuth();
+  const { showToast } = useToast();
   const { projects, loading: projectsLoading, updateProject, deleteProject } = useProjects();
   const { members, loading: membersLoading, updateMemberRole, removeMember } = useProjectMembers(projectId);
   const { invitations, loading: invitationsLoading, createInvitation, cancelInvitation, resendInvitation } = useInvitations(projectId);
@@ -71,8 +73,10 @@ export default function ProjectSettingsPage() {
         name: name.trim(),
         description: description.trim() || undefined,
       });
+      showToast('Projekt gespeichert!', 'success');
     } catch (err) {
       console.error('Error updating project:', err);
+      showToast('Fehler beim Speichern', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -84,16 +88,24 @@ export default function ProjectSettingsPage() {
     setIsDeleting(true);
     try {
       await deleteProject(projectId);
+      showToast('Projekt gelöscht', 'success');
       router.push('/projects');
     } catch (err) {
       console.error('Error deleting project:', err);
+      showToast('Fehler beim Löschen', 'error');
       setIsDeleting(false);
       setShowDeleteConfirm(false);
     }
   };
 
   const handleInvite = async (email: string, role: ProjectRole) => {
-    await createInvitation({ email, role });
+    try {
+      await createInvitation({ email, role });
+      showToast('Einladung gesendet!', 'success');
+    } catch (err) {
+      console.error('Error sending invitation:', err);
+      showToast('Fehler beim Senden der Einladung', 'error');
+    }
   };
 
   const handleUpdateRole = async (userId: string, role: ProjectRole) => {
@@ -277,7 +289,7 @@ export default function ProjectSettingsPage() {
             {activeTab === 'channels' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-stone-900 mb-1">Medienkanäle</h2>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">Kanäle</h2>
                   <p className="text-stone-500">
                     Verwalten Sie die verfügbaren Kanäle für Ihre Kampagnen.
                   </p>

@@ -135,19 +135,57 @@ service cloud.firestore {
         allow read: if canViewProject(projectId);
         allow create, update, delete: if canEditProject(projectId);
       }
+
+      // Campaign Types subcollection
+      match /campaignTypes/{typeId} {
+        allow read: if canViewProject(projectId);
+
+        allow create: if canEditProject(projectId) &&
+          request.resource.data.keys().hasAll(['name', 'color']) &&
+          request.resource.data.name is string &&
+          request.resource.data.name.size() > 0;
+
+        allow update, delete: if canEditProject(projectId);
+      }
+
+      // Invitations subcollection (under projects)
+      match /invitations/{invitationId} {
+        allow read: if isSignedIn() && (
+          isAdmin() ||
+          canViewProject(projectId) ||
+          (request.auth.token.email != null &&
+           resource.data.email.lower() == request.auth.token.email.lower())
+        );
+
+        allow create: if isSignedIn() && isNotBanned() &&
+          (isAdmin() || isProjectOwner(projectId)) &&
+          request.resource.data.keys().hasAll(['email', 'role', 'token', 'status', 'invitedBy', 'createdAt', 'expiresAt']) &&
+          isValidEmail(request.resource.data.email) &&
+          isValidRole(request.resource.data.role) &&
+          request.resource.data.status == 'pending' &&
+          request.resource.data.invitedBy == request.auth.uid;
+
+        allow update: if isSignedIn() && (
+          isAdmin() ||
+          isProjectOwner(projectId) ||
+          (request.auth.token.email != null &&
+           resource.data.email.lower() == request.auth.token.email.lower())
+        );
+
+        allow delete: if isAdmin() || isProjectOwner(projectId);
+      }
     }
 
-    // Invitations collection
+    // Legacy top-level Invitations collection (for backwards compatibility)
     match /invitations/{invitationId} {
       allow read: if isSignedIn() && (
         isAdmin() ||
         resource.data.invitedBy == request.auth.uid ||
-        (request.auth.token.email_verified == true &&
+        (request.auth.token.email != null &&
          resource.data.email.lower() == request.auth.token.email.lower())
       );
 
       allow create: if isSignedIn() && isNotBanned() &&
-        (isAdmin() || isProjectOwner(request.resource.data.projectId)) &&
         request.resource.data.keys().hasAll(['projectId', 'email', 'role', 'token', 'status', 'invitedBy', 'createdAt', 'expiresAt']) &&
         isValidEmail(request.resource.data.email) &&
         isValidRole(request.resource.data.role) &&
@@ -157,9 +195,9 @@ service cloud.firestore {
       allow update: if isSignedIn() && (
         isAdmin() ||
         resource.data.invitedBy == request.auth.uid ||
-        (request.auth.token.email_verified == true &&
+        (request.auth.token.email != null &&
          resource.data.email.lower() == request.auth.token.email.lower())
-      ) && request.resource.data.status in ['pending', 'accepted', 'expired', 'cancelled'];
+      );
 
       allow delete: if isAdmin() || resource.data.invitedBy == request.auth.uid;
     }

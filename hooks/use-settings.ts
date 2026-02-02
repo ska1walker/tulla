@@ -69,7 +69,9 @@ export function useSettings(projectId?: string) {
         return;
       }
 
-      if (!db || !activeProjectId) return;
+      if (!db || !activeProjectId) {
+        throw new Error('Keine Verbindung zur Datenbank.');
+      }
 
       const ref = doc(db, 'projects', activeProjectId, 'settings', 'phases');
       await setDoc(ref, newPhases, { merge: true });
@@ -86,7 +88,9 @@ export function useSettings(projectId?: string) {
         return;
       }
 
-      if (!db || !activeProjectId) return;
+      if (!db || !activeProjectId) {
+        throw new Error('Keine Verbindung zur Datenbank.');
+      }
 
       const ref = doc(db, 'projects', activeProjectId, 'settings', 'branding');
       await setDoc(ref, newBranding, { merge: true });

@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
+import { ToastProvider } from '@/contexts/toast-context';
 import { CookieBanner } from '@/components/ui/cookie-banner';
+import { ToastContainer } from '@/components/ui/toast';
+import { SyncIndicator } from '@/components/ui/sync-indicator';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -43,7 +46,13 @@ export default function RootLayout({
   return (
     <html lang="de" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ToastProvider>
+            {children}
+            <ToastContainer />
+            <SyncIndicator />
+          </ToastProvider>
+        </AuthProvider>
         <CookieBanner />
       </body>
     </html>

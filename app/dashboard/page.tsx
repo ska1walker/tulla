@@ -9,6 +9,7 @@ import { CampaignTooltip } from '@/components/dashboard/campaign-tooltip';
 import { CampaignModal, ExportModal } from '@/components/modals';
 import { CelebrationOverlay } from '@/components/ui/celebration-overlay';
 import { useAuth } from '@/contexts/auth-context';
+import { useToast } from '@/contexts/toast-context';
 import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
 import { useSettings } from '@/hooks/use-settings';
@@ -19,6 +20,7 @@ import { ZOOM_LEVELS, ViewMode, ZoomLevel } from '@/lib/constants';
 export default function DashboardPage() {
   const router = useRouter();
   const { role } = useAuth();
+  const { showToast } = useToast();
   const { campaigns, saveCampaign, deleteCampaign } = useCampaigns();
   const { channels } = useChannels();
   const { phases, branding, saveBranding } = useSettings();
@@ -48,19 +50,31 @@ export default function DashboardPage() {
   // Handle campaign save
   const handleSaveCampaign = async (data: Partial<Campaign>) => {
     const isNewCampaign = !data.id;
-    await saveCampaign(data as Campaign);
-    setEditingCampaign(null);
+    try {
+      await saveCampaign(data as Campaign);
+      setEditingCampaign(null);
+      showToast(isNewCampaign ? 'Kampagne erstellt!' : 'Kampagne gespeichert!', 'success');
 
-    // Trigger celebration for new campaigns
-    if (isNewCampaign) {
-      setShowCelebration(true);
+      // Trigger celebration for new campaigns
+      if (isNewCampaign) {
+        setShowCelebration(true);
+      }
+    } catch (err) {
+      console.error('Error saving campaign:', err);
+      showToast('Fehler beim Speichern der Kampagne', 'error');
     }
   };
 
   // Handle campaign delete
   const handleDeleteCampaign = async (id: string) => {
-    await deleteCampaign(id);
-    setEditingCampaign(null);
+    try {
+      await deleteCampaign(id);
+      setEditingCampaign(null);
+      showToast('Kampagne gelöscht', 'success');
+    } catch (err) {
+      console.error('Error deleting campaign:', err);
+      showToast('Fehler beim Löschen der Kampagne', 'error');
+    }
   };
 
   // Handle export settings save

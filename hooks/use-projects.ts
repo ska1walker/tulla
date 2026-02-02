@@ -196,6 +196,13 @@ export function useProjects() {
         joinedAt: serverTimestamp(),
       });
 
+      // Add default channel
+      await addDoc(collection(db, 'projects', docRef.id, 'channels'), {
+        name: 'Social Media',
+        color: '#F43F5E',
+        order: 0,
+      });
+
       const newProject: Project = {
         id: docRef.id,
         ...projectData,

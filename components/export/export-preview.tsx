@@ -203,7 +203,7 @@ function TimelinePreview({
           className="w-48 p-4 font-bold text-[10px] border-r flex items-center uppercase tracking-widest"
           style={{ borderColor: accentColor, color: primaryColor }}
         >
-          Medienkanal
+          Kanal
         </div>
         <div className="flex-grow flex relative text-[9px] font-bold">
           {timeline.totalDays > 0 &&

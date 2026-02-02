@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   collection,
   onSnapshot,
@@ -13,10 +13,18 @@ import { Channel } from '@/types';
 import { useAuth } from '@/contexts/auth-context';
 import { STORAGE_KEYS } from '@/lib/constants';
 
+// Default channel that will be created if none exist
+const DEFAULT_CHANNEL = {
+  name: 'Social Media',
+  color: '#F43F5E',
+  order: 0,
+};
+
 export function useChannels(projectId?: string) {
   const { db, isOffline, ready, role, currentProject } = useAuth();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [loading, setLoading] = useState(true);
+  const defaultChannelCreated = useRef(false);
 
   // Use provided projectId or fall back to current project
   const activeProjectId = projectId || currentProject?.id;
@@ -40,18 +48,34 @@ export function useChannels(projectId?: string) {
     }
 
     const ref = collection(db, 'projects', activeProjectId, 'channels');
-    const unsubscribe = onSnapshot(ref, (snapshot) => {
+    const unsubscribe = onSnapshot(ref, async (snapshot) => {
       const data = snapshot.docs
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
         } as Channel))
         .sort((a, b) => (a.order || 0) - (b.order || 0));
-      setChannels(data);
-      setLoading(false);
+
+      // Auto-create default channel if none exist
+      if (data.length === 0 && !defaultChannelCreated.current) {
+        defaultChannelCreated.current = true;
+        try {
+          await addDoc(ref, DEFAULT_CHANNEL);
+          // The onSnapshot will fire again with the new channel
+        } catch (err) {
+          console.error('Error creating default channel:', err);
+          defaultChannelCreated.current = false;
+        }
+      } else {
+        setChannels(data);
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      defaultChannelCreated.current = false;
+    };
   }, [db, isOffline, ready, role, activeProjectId]);
 
   // Save channel
@@ -81,7 +105,9 @@ export function useChannels(projectId?: string) {
         return;
       }
 
-      if (!db || !activeProjectId) return;
+      if (!db || !activeProjectId) {
+        throw new Error('Keine Verbindung zur Datenbank.');
+      }
 
       const ref = collection(db, 'projects', activeProjectId, 'channels');
 
@@ -105,7 +131,9 @@ export function useChannels(projectId?: string) {
         return;
       }
 
-      if (!db || !activeProjectId) return;
+      if (!db || !activeProjectId) {
+        throw new Error('Keine Verbindung zur Datenbank.');
+      }
 
       const ref = doc(db, 'projects', activeProjectId, 'channels', id);
       await deleteDoc(ref);

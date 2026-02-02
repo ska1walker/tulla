@@ -97,7 +97,9 @@ export function useCampaigns(projectId?: string) {
         return;
       }
 
-      if (!db || !activeProjectId) return;
+      if (!db || !activeProjectId) {
+        throw new Error('Keine Verbindung zur Datenbank.');
+      }
 
       const ref = collection(db, 'projects', activeProjectId, 'campaigns');
 
@@ -121,7 +123,9 @@ export function useCampaigns(projectId?: string) {
         return;
       }
 
-      if (!db || !activeProjectId) return;
+      if (!db || !activeProjectId) {
+        throw new Error('Keine Verbindung zur Datenbank.');
+      }
 
       const ref = doc(db, 'projects', activeProjectId, 'campaigns', id);
       await deleteDoc(ref);

@@ -7,10 +7,12 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 import { UserMenu } from '@/components/ui/user-menu';
 import { useProjects } from '@/hooks/use-projects';
+import { useToast } from '@/contexts/toast-context';
 
 export default function NewProjectPage() {
   const router = useRouter();
   const { createProject } = useProjects();
+  const { showToast } = useToast();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,10 +34,12 @@ export default function NewProjectPage() {
         name: name.trim(),
         description: description.trim() || undefined,
       });
+      showToast('Projekt erfolgreich erstellt!', 'success');
       router.push(`/projects/${project.id}`);
     } catch (err) {
       console.error('Error creating project:', err);
       setError('Fehler beim Erstellen des Projekts. Bitte versuchen Sie es erneut.');
+      showToast('Fehler beim Erstellen des Projekts', 'error');
     } finally {
       setIsLoading(false);
     }
