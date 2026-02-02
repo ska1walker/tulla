@@ -7,6 +7,7 @@ import { Timeline } from '@/components/dashboard/timeline';
 import { AnalyticsDashboard } from '@/components/dashboard/analytics-dashboard';
 import { CampaignTooltip } from '@/components/dashboard/campaign-tooltip';
 import { CampaignModal, ExportModal } from '@/components/modals';
+import { CelebrationOverlay } from '@/components/ui/celebration-overlay';
 import { useAuth } from '@/contexts/auth-context';
 import { useCampaigns } from '@/hooks/use-campaigns';
 import { useChannels } from '@/hooks/use-channels';
@@ -31,6 +32,7 @@ export default function DashboardPage() {
   // Modal state
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign> | null>(null);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Hover state
   const [hoveredCampaign, setHoveredCampaign] = useState<Campaign | null>(null);
@@ -45,8 +47,14 @@ export default function DashboardPage() {
 
   // Handle campaign save
   const handleSaveCampaign = async (data: Partial<Campaign>) => {
+    const isNewCampaign = !data.id;
     await saveCampaign(data as Campaign);
     setEditingCampaign(null);
+
+    // Trigger celebration for new campaigns
+    if (isNewCampaign) {
+      setShowCelebration(true);
+    }
   };
 
   // Handle campaign delete
@@ -143,6 +151,12 @@ export default function DashboardPage() {
           onSaveSettings={handleSaveExportSettings}
         />
       )}
+
+      {/* Celebration Overlay */}
+      <CelebrationOverlay
+        isVisible={showCelebration}
+        onComplete={() => setShowCelebration(false)}
+      />
     </div>
   );
 }
