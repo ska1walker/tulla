@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Sparkles, BarChart3, Users, Download, Calendar, Palette } from 'lucide-react';
+import { ArrowRight, Check, Sparkles, BarChart3, Users, Download, Calendar, Palette, Shield, Lock, Heart } from 'lucide-react';
 import { TulipLogo } from '@/components/icons/tulip-logo';
 
 export function LandingPage() {
@@ -48,9 +48,14 @@ export function LandingPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-12 md:pt-40 md:pb-20 px-6 md:px-12 max-w-6xl mx-auto">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 border border-rose-100 rounded-full mb-8 text-rose-600 text-xs font-bold uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5" /> Kampagnenplanung neu gedacht
+          {/* Badges */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 border border-rose-100 rounded-full text-rose-600 text-xs font-bold uppercase tracking-widest">
+              <Sparkles className="w-3.5 h-3.5" /> Kampagnenplanung neu gedacht
+            </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-700 text-[10px] font-bold uppercase tracking-widest">
+              <Shield className="w-3 h-3" /> DSGVO-konform • Kostenlos bis 50 Nutzer
+            </div>
           </div>
 
           {/* Headline */}
@@ -164,6 +169,50 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* DSGVO Section */}
+      <section className="py-16 md:py-20 px-6 md:px-12 bg-gradient-to-b from-emerald-50 to-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-3xl border border-emerald-100 shadow-xl overflow-hidden">
+            <div className="p-8 md:p-12">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                  <Lock className="w-6 h-6 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-black tracking-tight">
+                    Datenschutz? Haben wir ernst genommen.
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                {[
+                  { icon: <Shield className="w-4 h-4" />, text: 'Gehostet in der EU' },
+                  { icon: <Lock className="w-4 h-4" />, text: 'Kein Tracking, keine Werbung' },
+                  { icon: <Heart className="w-4 h-4" />, text: 'Deine Daten gehören dir' },
+                  { icon: <Check className="w-4 h-4" />, text: 'DSGVO-konform nach deutschem Recht' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-stone-700">
+                    <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                      {item.icon}
+                    </div>
+                    <span className="font-medium">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                href="/datenschutz-versprechen"
+                className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-bold transition-colors group"
+              >
+                Mehr erfahren
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Problem → Solution */}
       <section className="py-20 md:py-32 px-6 md:px-12">
         <div className="max-w-5xl mx-auto">
@@ -259,6 +308,51 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-stone-900 text-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full mb-8 text-emerald-400 text-xs font-bold uppercase tracking-widest">
+            <Heart className="w-3.5 h-3.5" /> Für immer kostenlos
+          </div>
+
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
+            Kostenlos. Für immer.
+            <br />
+            <span className="text-emerald-400">Bis 50 im Team.</span>
+          </h2>
+
+          <p className="text-lg text-stone-400 max-w-2xl mx-auto mb-8">
+            Keine Kreditkarte. Keine versteckten Kosten.
+            Keine nervigen &ldquo;Free Trial endet in 14 Tagen&rdquo; E-Mails.
+          </p>
+
+          <div className="bg-white/5 rounded-2xl p-8 mb-8 max-w-md mx-auto">
+            <div className="text-6xl font-black text-white mb-2">0 €</div>
+            <div className="text-stone-400 mb-6">pro Monat, für immer</div>
+
+            <div className="space-y-3 text-left">
+              {[
+                'Unbegrenzte Projekte',
+                'Unbegrenzte Kampagnen',
+                'Bis zu 50 Teammitglieder',
+                'Alle Features inklusive',
+                'Export als PNG',
+                'DSGVO-konform',
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-stone-300">
+                  <Check className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-sm text-stone-500 italic">
+            Wir glauben: Gute Tools sollten für alle zugänglich sein.
+          </p>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-rose-50 to-white">
         <div className="max-w-3xl mx-auto text-center">
@@ -300,6 +394,10 @@ export function LandingPage() {
 
             <div className="flex items-center gap-6 text-sm text-stone-400">
               <Link href="/login" className="hover:text-white transition-colors">Anmelden</Link>
+              <Link href="/datenschutz-versprechen" className="hover:text-white transition-colors flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                DSGVO
+              </Link>
               <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
               <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
             </div>
