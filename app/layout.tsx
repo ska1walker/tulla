@@ -10,8 +10,29 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'maiflow - Liebevolle Kampagnensteuerung',
-  description: 'Marketing-Kampagnenplanung mit Emotion und Klarheit',
+  title: 'maiflow - Kampagnenplanung für Marketing-Teams',
+  description: 'Der visuelle Kampagnenplaner für Teams, die wissen: Gutes Marketing verdient ein gutes Tool. DSGVO-konform. Kostenlos bis 50 Nutzer.',
+  keywords: ['Kampagnenplanung', 'Marketing', 'Timeline', 'Team', 'DSGVO', 'kostenlos'],
+  authors: [{ name: 'maiflow' }],
+  creator: 'maiflow',
+  metadataBase: new URL('https://maiflow.app'),
+  openGraph: {
+    title: 'maiflow - Kampagnenplanung für Marketing-Teams',
+    description: 'Der visuelle Kampagnenplaner für Teams. DSGVO-konform. Kostenlos bis 50 Nutzer.',
+    url: 'https://maiflow.app',
+    siteName: 'maiflow',
+    locale: 'de_DE',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'maiflow - Kampagnenplanung für Marketing-Teams',
+    description: 'Der visuelle Kampagnenplaner für Teams. DSGVO-konform. Kostenlos bis 50 Nutzer.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
