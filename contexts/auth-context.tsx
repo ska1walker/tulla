@@ -110,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               console.error('Error loading user profile:', err);
               if (mounted) {
                 setIsOffline(true);
+                setReady(true); // Still set ready even on error
               }
             }
           } else {
