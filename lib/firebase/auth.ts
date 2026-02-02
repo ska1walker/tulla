@@ -9,10 +9,22 @@ import {
   signInWithEmailLink,
   signOut,
   updateProfile,
+  deleteUser,
   User,
   ActionCodeSettings,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  doc,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  serverTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
 import { getFirebaseAuth, getFirebaseDb } from './config';
 import { UserProfileData } from '@/types';
 
@@ -157,4 +169,77 @@ export async function updateUserProfile(
 export async function checkUserBanned(userId: string): Promise<boolean> {
   const profile = await getUserProfile(userId);
   return profile?.isBanned || false;
+}
+
+// Delete user account and all associated data (DSGVO Art. 17)
+export async function deleteUserAccount(): Promise<void> {
+  const auth = getFirebaseAuth();
+  const db = getFirebaseDb();
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error('Nicht angemeldet.');
+  }
+
+  const userId = user.uid;
+
+  // Helper function to delete all documents in a subcollection
+  async function deleteSubcollection(projectId: string, subcollectionName: string) {
+    const subcollectionRef = collection(db, 'projects', projectId, subcollectionName);
+    const snapshot = await getDocs(subcollectionRef);
+
+    const batch = writeBatch(db);
+    snapshot.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    if (snapshot.docs.length > 0) {
+      await batch.commit();
+    }
+  }
+
+  // 1. Find and delete all projects owned by this user
+  const projectsRef = collection(db, 'projects');
+  const ownedProjectsQuery = query(projectsRef, where('ownerId', '==', userId));
+  const ownedProjects = await getDocs(ownedProjectsQuery);
+
+  for (const projectDoc of ownedProjects.docs) {
+    const projectId = projectDoc.id;
+
+    // Delete all subcollections
+    await deleteSubcollection(projectId, 'campaigns');
+    await deleteSubcollection(projectId, 'channels');
+    await deleteSubcollection(projectId, 'campaignTypes');
+    await deleteSubcollection(projectId, 'members');
+    await deleteSubcollection(projectId, 'invitations');
+    await deleteSubcollection(projectId, 'settings');
+
+    // Delete the project document
+    await deleteDoc(doc(db, 'projects', projectId));
+  }
+
+  // 2. Remove user from projects they're members of (but don't own)
+  const allProjectsSnapshot = await getDocs(projectsRef);
+  for (const projectDoc of allProjectsSnapshot.docs) {
+    const memberRef = doc(db, 'projects', projectDoc.id, 'members', userId);
+    const memberDoc = await getDoc(memberRef);
+    if (memberDoc.exists()) {
+      await deleteDoc(memberRef);
+    }
+  }
+
+  // 3. Delete user profile from Firestore
+  await deleteDoc(doc(db, 'users', userId));
+
+  // 4. Delete Firebase Auth user (must be last)
+  await deleteUser(user);
+
+  // 5. Clear local storage
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('currentProjectId');
+    localStorage.removeItem('pendingInvitationToken');
+    localStorage.removeItem('emailForSignIn');
+    localStorage.removeItem('maiflow-cookie-consent');
+    sessionStorage.clear();
+  }
 }

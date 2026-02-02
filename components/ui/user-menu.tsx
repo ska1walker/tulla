@@ -2,13 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, LogOut, Shield, ChevronDown } from 'lucide-react';
+import { LogOut, Shield, ChevronDown, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
+import { DeleteAccountModal } from '@/components/modals';
 
 export function UserMenu() {
   const router = useRouter();
   const { userProfile, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -32,6 +34,11 @@ export function UserMenu() {
   const handleAdminDashboard = () => {
     setIsOpen(false);
     router.push('/admin');
+  };
+
+  const handleDeleteAccount = () => {
+    setIsOpen(false);
+    setShowDeleteModal(true);
   };
 
   if (!userProfile) {
@@ -94,13 +101,28 @@ export function UserMenu() {
             )}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-stone-600 hover:bg-stone-50 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               <span className="font-medium">Abmelden</span>
             </button>
+
+            <div className="border-t border-stone-100 mt-2 pt-2">
+              <button
+                onClick={handleDeleteAccount}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="font-medium">Konto löschen</span>
+              </button>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <DeleteAccountModal onClose={() => setShowDeleteModal(false)} />
       )}
     </div>
   );
