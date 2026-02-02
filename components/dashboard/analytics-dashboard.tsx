@@ -93,8 +93,11 @@ function calculateChannelBudgets(
         trend: getTrend(planned, actual),
       };
     })
-    .filter((b) => b.planned > 0 || b.actual > 0)
-    .sort((a, b) => b.planned - a.planned);
+    // Show all channels, sort by planned budget (channels with budget first, then alphabetically)
+    .sort((a, b) => {
+      if (b.planned !== a.planned) return b.planned - a.planned;
+      return a.channelName.localeCompare(b.channelName);
+    });
 }
 
 // Calculate budget per phase
@@ -270,7 +273,7 @@ export function AnalyticsDashboard({
       </div>
 
       {/* Budget per Channel - Horizontal Bar Chart */}
-      {channelBudgets.length > 0 && (
+      {channels.length > 0 && (
         <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
           <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">
             Budget pro Kanal
@@ -281,30 +284,52 @@ export function AnalyticsDashboard({
               const plannedWidth = maxValue > 0 ? (item.planned / maxValue) * 100 : 0;
               const actualWidth = maxValue > 0 ? (item.actual / maxValue) * 100 : 0;
 
+              const hasNoBudget = item.planned === 0 && item.actual === 0;
+
               return (
                 <div key={item.channel.id} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-stone-700">{item.channelName}</span>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-3 h-3 rounded-sm"
+                        style={{ backgroundColor: item.channel.color || '#71717a' }}
+                      />
+                      <span className="text-sm font-medium text-stone-700">{item.channelName}</span>
+                    </div>
                     <div className="flex items-center gap-3 text-xs">
-                      <span className="text-stone-400">Plan: {fmtCurrency(item.planned)}</span>
-                      <span className="text-stone-600 font-medium">Ist: {fmtCurrency(item.actual)}</span>
-                      <TrendIcon trend={item.trend} positiveColor={positiveColor} negativeColor={negativeColor} />
+                      {hasNoBudget ? (
+                        <span className="text-stone-400 italic">Kein Budget</span>
+                      ) : (
+                        <>
+                          <span className="text-stone-400">Plan: {fmtCurrency(item.planned)}</span>
+                          <span className="text-stone-600 font-medium">Ist: {fmtCurrency(item.actual)}</span>
+                          <TrendIcon trend={item.trend} positiveColor={positiveColor} negativeColor={negativeColor} />
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="relative h-6 bg-stone-100 rounded-lg overflow-hidden">
-                    {/* Plan bar (background) */}
-                    <div
-                      className="absolute top-0 left-0 h-full bg-stone-300 rounded-lg transition-all"
-                      style={{ width: `${plannedWidth}%` }}
-                    />
-                    {/* Actual bar (foreground) */}
-                    <div
-                      className="absolute top-0 left-0 h-full rounded-lg transition-all"
-                      style={{
-                        width: `${actualWidth}%`,
-                        backgroundColor: item.trend === 'negative' ? negativeColor : item.trend === 'positive' ? positiveColor : '#71717a'
-                      }}
-                    />
+                    {hasNoBudget ? (
+                      <div className="absolute inset-0 flex items-center justify-center text-[10px] text-stone-400">
+                        Noch keine Kampagnen
+                      </div>
+                    ) : (
+                      <>
+                        {/* Plan bar (background) */}
+                        <div
+                          className="absolute top-0 left-0 h-full bg-stone-300 rounded-lg transition-all"
+                          style={{ width: `${plannedWidth}%` }}
+                        />
+                        {/* Actual bar (foreground) */}
+                        <div
+                          className="absolute top-0 left-0 h-full rounded-lg transition-all"
+                          style={{
+                            width: `${actualWidth}%`,
+                            backgroundColor: item.trend === 'negative' ? negativeColor : item.trend === 'positive' ? positiveColor : '#71717a'
+                          }}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               );
