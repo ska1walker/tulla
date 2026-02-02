@@ -1,11 +1,163 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { Volume2, VolumeX } from 'lucide-react';
+
+// 8-bit Chiptune melody generator - GEMA-free (programmatically generated)
+function createChiptunePlayer() {
+  let audioContext: AudioContext | null = null;
+  let isPlaying = false;
+  let timeoutIds: NodeJS.Timeout[] = [];
+
+  // Pentatonic scale frequencies for a pleasant melody
+  const notes: Record<string, number> = {
+    C4: 261.63, D4: 293.66, E4: 329.63, G4: 392.00, A4: 440.00,
+    C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00,
+  };
+
+  // Simple melody pattern (loops)
+  const melody = [
+    { note: 'E4', duration: 0.2 },
+    { note: 'G4', duration: 0.2 },
+    { note: 'A4', duration: 0.2 },
+    { note: 'C5', duration: 0.4 },
+    { note: 'A4', duration: 0.2 },
+    { note: 'G4', duration: 0.2 },
+    { note: 'E4', duration: 0.4 },
+    { note: 'D4', duration: 0.2 },
+    { note: 'E4', duration: 0.2 },
+    { note: 'G4', duration: 0.4 },
+    { note: 'E4', duration: 0.2 },
+    { note: 'D4', duration: 0.2 },
+    { note: 'C4', duration: 0.6 },
+    { note: null, duration: 0.2 }, // Rest
+  ];
+
+  const playNote = (frequency: number, startTime: number, duration: number) => {
+    if (!audioContext) return;
+
+    // Main oscillator (square wave for 8-bit sound)
+    const osc = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    osc.type = 'square';
+    osc.frequency.value = frequency;
+
+    // Envelope for that classic chiptune sound
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.01);
+    gainNode.gain.linearRampToValueAtTime(0.1, startTime + duration * 0.3);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+
+  const playMelody = () => {
+    if (!audioContext || !isPlaying) return;
+
+    let time = audioContext.currentTime;
+    const tempo = 140; // BPM
+    const beatDuration = 60 / tempo;
+
+    melody.forEach((item) => {
+      if (item.note && notes[item.note]) {
+        playNote(notes[item.note], time, item.duration * beatDuration * 0.9);
+      }
+      time += item.duration * beatDuration;
+    });
+
+    // Loop the melody
+    const loopDuration = melody.reduce((sum, item) => sum + item.duration, 0) * beatDuration * 1000;
+    const timeoutId = setTimeout(() => {
+      if (isPlaying) playMelody();
+    }, loopDuration);
+    timeoutIds.push(timeoutId);
+  };
+
+  return {
+    start: () => {
+      if (isPlaying) return;
+      audioContext = new AudioContext();
+      isPlaying = true;
+      playMelody();
+    },
+    stop: () => {
+      isPlaying = false;
+      timeoutIds.forEach(clearTimeout);
+      timeoutIds = [];
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+    },
+    isPlaying: () => isPlaying,
+  };
+}
 
 export default function CreditsPage() {
   const [scrollY, setScrollY] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const playerRef = useRef<ReturnType<typeof createChiptunePlayer> | null>(null);
+
+  const startMusic = useCallback(() => {
+    if (!playerRef.current) {
+      playerRef.current = createChiptunePlayer();
+    }
+    if (!playerRef.current.isPlaying()) {
+      playerRef.current.start();
+      setIsMusicPlaying(true);
+    }
+  }, []);
+
+  const toggleMusic = useCallback(() => {
+    if (!playerRef.current) {
+      playerRef.current = createChiptunePlayer();
+    }
+
+    if (isMusicPlaying) {
+      playerRef.current.stop();
+      setIsMusicPlaying(false);
+    } else {
+      playerRef.current.start();
+      setIsMusicPlaying(true);
+    }
+  }, [isMusicPlaying]);
+
+  // Auto-start music on first user interaction (browsers block autoplay without interaction)
+  useEffect(() => {
+    const handleInteraction = () => {
+      startMusic();
+      // Remove listeners after first interaction
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+    };
+
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+    window.addEventListener('scroll', handleInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+    };
+  }, [startMusic]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.stop();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -213,6 +365,25 @@ export default function CreditsPage() {
           </section>
 
         </div>
+
+        {/* Music toggle button */}
+        <button
+          onClick={toggleMusic}
+          className="fixed top-8 right-8 p-3 bg-rose-500/20 border border-rose-500/50 text-rose-400 font-mono text-sm hover:bg-rose-500/30 transition-colors z-50 flex items-center gap-2"
+          title={isMusicPlaying ? 'Musik aus' : 'Musik an'}
+        >
+          {isMusicPlaying ? (
+            <>
+              <Volume2 className="w-4 h-4" />
+              <span className="text-xs">♪ ON</span>
+            </>
+          ) : (
+            <>
+              <VolumeX className="w-4 h-4" />
+              <span className="text-xs">♪ OFF</span>
+            </>
+          )}
+        </button>
 
         {/* Back button */}
         <Link
