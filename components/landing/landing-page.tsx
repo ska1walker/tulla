@@ -300,6 +300,8 @@ export function LandingPage() {
 
             <div className="flex items-center gap-6 text-sm text-stone-400">
               <Link href="/login" className="hover:text-white transition-colors">Anmelden</Link>
+              <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
+              <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
               <Link href="/credits" className="hover:text-white transition-colors flex items-center gap-1">
                 <span>Credits</span>
                 <span className="text-base">🎮</span>
